@@ -22,7 +22,6 @@ task main()
   initializeRobot();
 while(true){
 getJoystickSettings(joystick);
-
 omniDrive(joystick.joy1_x1, joystick.joy1_y1);
 if (joy1btn(5)==1)
 	{
