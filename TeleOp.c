@@ -26,7 +26,6 @@ task main()
   initializeRobot();
 while(true){
 getJoystickSettings(joystick);
-
 omniDrive(joystick.joy1_x1, joystick.joy1_y1);
   }
 }
@@ -34,6 +33,7 @@ void omniDrive(int joyx, int joyy)
 {
 	int NmotorValue1, NmotorValue2;
 	float FmotorValue1, FmotorValue2;
+	if joy1btn()
  /* motor[motorD] =*/ FmotorValue1 = ((100.0/128)*(float)joyx + (100.0/128)*(float)joyy)/sqrt(2);
  /* motor[motorF] =*/ FmotorValue2 = ((100.0/128)*-(float)joyx + (100.0/128)*(float)joyy)/sqrt(2);
 //FmotorValue1 = ((100.0/128.0)*(float)joyx);
