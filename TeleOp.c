@@ -27,7 +27,10 @@ if (joy1btn(5)==1)
 	{
 		motor[motorH]=50;
   }
-
+if (joy1btn(7)==1)
+	{
+		motor[motorH]=-50;
+	}
 	switch(joystick.joy1_TopHat)
 	{
 		case 0:
@@ -45,6 +48,7 @@ if (joy1btn(5)==1)
 		default:
 		servo[servo1] = 0;
 	}
+}
 }
 void omniDrive(int joyx, int joyy)
 {
