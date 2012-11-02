@@ -24,6 +24,9 @@ task main() {
         if(joy1btn(5)==1) {
             motor[motorH] = 50;
         }
+        if (joy1btn(7)==1) {
+		motor[motorH]=-50;
+	}
 
         switch(joystick.joy1_TopHat) {
         case 0:
