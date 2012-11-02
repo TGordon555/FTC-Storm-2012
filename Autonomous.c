@@ -2,16 +2,8 @@
 #pragma config(Sensor, S2,     light2,         sensorLightActive)
 #include "JoystickDriver.c"
 
-void initializeRobot()
-{
-  return;
-}
-
-task main()
-{
-  initializeRobot();
-  waitForStart();
-  while(true)
-  	{
-
+task main() {
+    waitForStart();
+    while(true) {
+    }
 }
