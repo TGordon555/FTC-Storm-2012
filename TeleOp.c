@@ -12,12 +12,27 @@
 
 #include "JoystickDriver.c"
 #pragma platform(Tetrix)
-void omniDrive(int joyx, int joyy);
+
+void omniDrive(int joyx, int joyy, float scale);
+void latchrelease();
+
+const float NORMAL_SCALE = 1.f;
+const float SLOW_SCALE = 0.5f;
+float scale = NORMAL_SCALE;
+
 task main() {
 	//waitForStart();
 	while(true) {
         getJoystickSettings(joystick);
-        omniDrive(joystick.joy1_x1, joystick.joy1_y1);
+		//see if btn 8 is depressed, if so sets a scale factor for all movement calculations in omnidrive function
+		if(joy1_btn(10)){
+		//Release Latch
+		latchrelease();
+		}
+		if(joy1_btn(8)){
+		scale = SLOW_SCALE;
+		}
+        omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale);
         if(joy1Btn(5)==1) {
             motor[motorH] = 50;
         }
@@ -44,15 +59,23 @@ task main() {
     }
 }
 
-void omniDrive(int joyx, int joyy) {
-    int upRightSpeed = ((100.0/128)*(float)joyx +
+//int scale: multiplies by the scale factor to receive new speed
+void omniDrive(int joyx, int joyy, float scale) {
+    int upRightSpeed = (((100.0/128)*(float)joyx +
                         (100.0/128)*(float)joyy)
-                       /sqrt(2);
-    int upLeftSpeed  = (-(100.0/128)*(float)joyx +
+                       /sqrt(2))
+					   *scale;
+    int upLeftSpeed  = ((-(100.0/128)*(float)joyx +
                         (100.0/128)*(float)joyy)
-                       /sqrt(2);
+                       /sqrt(2))
+					   *scale;
     motor[motorE] = upRightSpeed;
     motor[motorD] = upRightSpeed;
     motor[motorG] = upLeftSpeed;
     motor[motorF] = upLeftSpeed;
+}
+
+void latchrelease() {
+//write code when given a latch release mechanism design from mech
+writedebugstreanline("Latch Release initiated");
 }
