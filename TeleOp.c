@@ -13,7 +13,7 @@
 #include "JoystickDriver.c"
 #pragma platform(Tetrix)
 
-void omniDrive(int joyx, int joyy, float scale);
+void omniDrive(int joyx, int joyy, float scale, int joyspin);
 void latchrelease();
 
 const float NORMAL_SCALE = 1.f;
@@ -32,7 +32,7 @@ task main() {
 		if(joy1_btn(8)){
 		scale = SLOW_SCALE;
 		}
-        omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale);
+        omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale, joystick.joy1_x2);
         if(joy1Btn(5)==1) {
             motor[motorH] = 50;
         }
@@ -60,19 +60,17 @@ task main() {
 }
 
 //int scale: multiplies by the scale factor to receive new speed
-void omniDrive(int joyx, int joyy, float scale) {
-    int upRightSpeed = (((100.0/128)*(float)joyx +
-                        (100.0/128)*(float)joyy)
-                       /sqrt(2))
-					   *scale;
-    int upLeftSpeed  = ((-(100.0/128)*(float)joyx +
-                        (100.0/128)*(float)joyy)
-                       /sqrt(2))
-					   *scale;
-    motor[motorE] = upRightSpeed;
-    motor[motorD] = upRightSpeed;
-    motor[motorG] = upLeftSpeed;
-    motor[motorF] = upLeftSpeed;
+void omniDrive(int joyx, int joyy, float scale, int joyspin) {
+    float x,y,spin;
+    x = (100.0/128)*(float)joyx;
+    y = (100.0/128)*(float)joyy;
+    spin = (50.0/128) * (float) joyspin;
+    int upRightSpeed = x + y / sqrt(2);
+    int upLeftSpeed  = -x + y / sqrt(2);
+    motor[motorE] = upRightSpeed * scale + spin;
+    motor[motorD] = upRightSpeed * scale - spin;
+    motor[motorG] = upLeftSpeed * scale + spin;
+    motor[motorF] = upLeftSpeed * scale - spin;
 }
 
 void latchrelease() {
