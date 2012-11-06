@@ -11,7 +11,7 @@ Chassis drive system
 
 TODO
 -Turning on Joy2
--hand opening on up arrow/hand closing on down arrow
--arm open on button 7/arm down on button 5
+-hand opening on up arrow/hand closing on down arrow DONE BY TIM G.
+-arm down on button 7/arm UP on button 5 DONE BY JUSTIN
 -refined movement button on button 8 DONE BY JUSTIN
 -ramp latch release on button 10 PARTIALLY DONE BY JUSTIN
