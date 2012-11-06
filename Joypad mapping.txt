@@ -1,0 +1,17 @@
+Ramp - release mech
+End efector - 2 to 3
+1 To extend arm
+1 SERVO to control hand
+1 ????
+3 macro buttons for heights
+Chassis drive system
+-one joystick for normal driving
+-triggers for spinning
+-fine control joystick
+
+TODO
+-Turning on Joy2
+-hand opening on up arrow/hand closing on down arrow
+-arm open on button 7/arm down on button 5
+-refined movement button on button 8 DONE BY JUSTIN
+-ramp latch release on button 10 PARTIALLY DONE BY JUSTIN
