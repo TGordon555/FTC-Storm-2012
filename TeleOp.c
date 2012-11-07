@@ -17,7 +17,7 @@
 //#define ENABLE_LATCH
 //#define ENABLE_ARM
 //#define ENABLE_CLAW
-
+//#define ENABLE_MACRO_BUTTONS
 
 void omniDrive(int joyx, int joyy, float scale, int joyspin);
 #ifdef ENABLE_LATCH
@@ -26,7 +26,10 @@ void latchrelease();
 #ifdef ENABLE_ARM
 void armMove(bool moveUp);
 #endif
-
+#ifdef ENABLE_MACRO_BUTTONS
+int currentHeight = 0, targetHeight;
+void armMacro(int gotoHeight, bool moving);
+#endif
 #define NORMAL_SCALE 1.0
 #define SLOW_SCALE 0.5
 float scale = NORMAL_SCALE;
@@ -40,10 +43,11 @@ task main() {
             //if both 7 and 5 are depressed DO NOTHING!
             writeDebugStreamLine("Both #5 and #7 depressed");
         } else if(joy1Btn(7)) {
+		//Call are movement function; move down
             armMove(false);
             writeDebugStreamLine("joy1_btn 7 depressed; armMove false initiated");
         } else if(joy1Btn(5)) {
-            //call arm movement function
+            //call arm movement function; Move up
             armMove(true);
             writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
 	}
@@ -52,26 +56,25 @@ task main() {
 
 #ifdef ENABLE_LATCH
 
-        //see if btn 8 is depressed, if so sets a scale factor for all movement calculations in omnidrive function
         if(joy1Btn(10)) {
             //Release Latch
             latchrelease();
         }
 
 #endif
-
+//see if btn 8 is depressed, if so sets a scale factor for all movement calculations in omnidrive function
         if(joy1Btn(8)) {
             scale = SLOW_SCALE;
         } else {
             scale = NORMAL_SCALE;
         }
         omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale, joystick.joy1_x2);
-        if(joy1Btn(5)) {
+      /*  if(joy1Btn(5)) {
             motor[motorH] = 50;
         }
         if (joy1Btn(7)) {
             motor[motorH]=-50;
-	}
+	}*/
 
 #ifdef ENABLE_CLAW
 
@@ -93,10 +96,27 @@ task main() {
         }
 
 #endif
+
+#ifdef ENABLE_MACRO_BUTTONS
+	//checks if arm has reached target
+	armMacro(0,true);
+	if(joy1btn(1)){
+		armMacro(0, false);
+	}
+	if(joy1btn(2)){
+		armMacro(1, false);
+	}
+	if(joy1btn(3)){
+		armMacro(2, false);
+	}
+	if(joy1btn(4)){
+		armMacro(3, false);
+	}
+#ifdef
     }
 }
 
-//int scale: multiplies by the scale factor to receive new speed
+//float scale: multiplies by the scale factor to receive new speed
 void omniDrive(int joyx, int joyy, float scale, int joyspin) {
     float x    = (100.0/128) * (float)joyx,
           y    = (100.0/128) * (float)joyy,
@@ -114,7 +134,7 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 #ifdef ENABLE_LATCH
 
 void latchrelease() {
-    //write code when given a latch release mechanism design from mech
+    //TODO: write latch release
     writeDebugStreamLine("Latch Release initiated");
 }
 
@@ -123,9 +143,9 @@ void latchrelease() {
 #ifdef ENABLE_ARM
 
 void armMove(bool moveUp) {
-    //Movement speed TBD
+    //TODO: Tune movement speed
     const float armSpeed = 50;
-    //Motor designation open to change
+    //TODO: Motor designation changed
     if(moveUp) {
         motor[motorI] = armSpeed;
     } else {
@@ -135,3 +155,34 @@ void armMove(bool moveUp) {
 
 #endif
 
+#ifdef ENABLE_MACRO_BUTTONS
+//Assumes that arm has locking ability
+//TODO: Test this code EXTENSIVLEY
+void armMacro(int gotoHeight, bool moving) {
+//TODO: Refine levels() values
+	int levels(4) = {0, 360, 720, 1080};
+	if (!moving){
+		targetHeight = levels(gotoHeight) - currentHeight;
+		//TODO: Determine proper motor designation
+		nMotorEncoder[MotorH] = 0;
+		//TODO: Determine proper motor speed
+		if (targetHeight > 0)
+		motor[MotorH] = 75;
+		else if (targetHeight < 0)
+		motor[MotorH] = -75;
+		else
+		motor[MotorH] = 0;
+		writedebugstreamline("Arm already at destination height")
+	}
+	else {
+	if (currentHeight = targetHeight){
+		motor[MotorH] = 0;
+		writedebugstreamline("Arm reached destination height")
+	}
+	else {
+	currentHeight = currentHeight + nMotorEncoder[MotorH];
+	}
+	
+}
+
+#endif

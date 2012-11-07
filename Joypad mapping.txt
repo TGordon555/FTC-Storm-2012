@@ -15,3 +15,4 @@ TODO
 -arm down on button 7/arm UP on button 5 DONE BY JUSTIN
 -refined movement button on button 8 DONE BY JUSTIN
 -ramp latch release on button 10 PARTIALLY DONE BY JUSTIN
+-Macro key potential DONE BY JUSTIN
