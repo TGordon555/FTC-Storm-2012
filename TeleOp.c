@@ -14,9 +14,18 @@
 
 #pragma platform(Tetrix)
 
+//#define ENABLE_LATCH
+//#define ENABLE_ARM
+//#define ENABLE_CLAW
+
+
 void omniDrive(int joyx, int joyy, float scale, int joyspin);
+#ifdef ENABLE_LATCH
 void latchrelease();
+#endif
+#ifdef ENABLE_ARM
 void armMove(bool moveUp);
+#endif
 
 const float NORMAL_SCALE = 1.f;
 const float SLOW_SCALE = 0.5f;
@@ -25,6 +34,9 @@ float scale = NORMAL_SCALE;
 task main() {
     while(true) {
         getJoystickSettings(joystick);
+
+#ifdef ENABLE_ARM
+
         if(joy1_btn(7) && joy1_btn(5)) {
             //if both 7 and 5 are depressed DO NOTHING!
             writedebugstreamline("Both #5 and #7 depressed");
@@ -37,11 +49,18 @@ task main() {
             writedebugstreamline("joy1_btn 5 depressed; armMove true initiated")
 	}
 
+#endif
+
+#ifdef ENABLE_LATCH
+
         //see if btn 8 is depressed, if so sets a scale factor for all movement calculations in omnidrive function
         if(joy1_btn(10)) {
             //Release Latch
             latchrelease();
         }
+
+#endif
+
         if(joy1_btn(8)) {
             scale = SLOW_SCALE;
         }
@@ -50,8 +69,10 @@ task main() {
             motor[motorH] = 50;
         }
         if (joy1Btn(7)) {
-		motor[motorH]=-50;
+            motor[motorH]=-50;
 	}
+
+#ifdef ENABLE_CLAW
 
         switch(joystick.joy1_TopHat) {
         case 0:
@@ -69,6 +90,8 @@ task main() {
         default:
             servo[servo1] = 0;
         }
+
+#endif
     }
 }
 
@@ -87,10 +110,16 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
     motor[motorF] = (upLeftSpeed  - spin) * scale;
 }
 
+#ifdef ENABLE_LATCH
+
 void latchrelease() {
     //write code when given a latch release mechanism design from mech
     writedebugstreamline("Latch Release initiated");
 }
+
+#endif
+
+#ifdef ENABLE_ARM
 
 void armMove(bool moveUp) {
     //Movement speed TBD
@@ -102,3 +131,6 @@ void armMove(bool moveUp) {
         motor[MotorI] = - armSpeed;
     }
 }
+
+#endif
+
