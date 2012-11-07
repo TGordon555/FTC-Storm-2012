@@ -27,26 +27,25 @@ void latchrelease();
 void armMove(bool moveUp);
 #endif
 
-const float NORMAL_SCALE = 1.f;
-const float SLOW_SCALE = 0.5f;
+#define NORMAL_SCALE 1.0
+#define SLOW_SCALE 0.5
 float scale = NORMAL_SCALE;
-
 task main() {
     while(true) {
         getJoystickSettings(joystick);
 
 #ifdef ENABLE_ARM
 
-        if(joy1_btn(7) && joy1_btn(5)) {
+        if(joy1Btn(7) && joy1Btn(5)) {
             //if both 7 and 5 are depressed DO NOTHING!
-            writedebugstreamline("Both #5 and #7 depressed");
-        } else if(joy1_btn(7)) {
+            writeDebugStreamLine("Both #5 and #7 depressed");
+        } else if(joy1Btn(7)) {
             armMove(false);
-            writedebugstreamline("joy1_btn 7 depressed; armMove false initiated")
-        } else if(joy1_btn(5)) {
+            writeDebugStreamLine("joy1_btn 7 depressed; armMove false initiated");
+        } else if(joy1Btn(5)) {
             //call arm movement function
             armMove(true);
-            writedebugstreamline("joy1_btn 5 depressed; armMove true initiated")
+            writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
 	}
 
 #endif
@@ -54,14 +53,14 @@ task main() {
 #ifdef ENABLE_LATCH
 
         //see if btn 8 is depressed, if so sets a scale factor for all movement calculations in omnidrive function
-        if(joy1_btn(10)) {
+        if(joy1Btn(10)) {
             //Release Latch
             latchrelease();
         }
 
 #endif
 
-        if(joy1_btn(8)) {
+        if(joy1Btn(8)) {
             scale = SLOW_SCALE;
         }
         omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale, joystick.joy1_x2);
@@ -114,7 +113,7 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 
 void latchrelease() {
     //write code when given a latch release mechanism design from mech
-    writedebugstreamline("Latch Release initiated");
+    writeDebugStreamLine("Latch Release initiated");
 }
 
 #endif
@@ -126,9 +125,9 @@ void armMove(bool moveUp) {
     const float armSpeed = 50;
     //Motor designation open to change
     if(moveUp) {
-        motor[MotorI] = armSpeed;
+        motor[motorI] = armSpeed;
     } else {
-        motor[MotorI] = - armSpeed;
+        motor[motorI] = - armSpeed;
     }
 }
 
