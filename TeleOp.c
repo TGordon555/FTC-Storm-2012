@@ -16,7 +16,12 @@
 
 /* Motor Roles:
  * - ExampleMotor: Does things
- * 
+ * - MotorE: moves robot, front left wheel
+ * - MotorD: moves robot, back right wheel
+ * - MotorF: moves robot, front right wheel
+ * - MotorG: moves robot, back left wheel
+ * - MotorH: moves arm up and down
+ * - MotorI:
  * TODO: add more of this
  */
 
@@ -140,4 +145,3 @@ void armMove(bool moveUp) {
 }
 
 #endif
-
