@@ -14,6 +14,12 @@
 
 #pragma platform(Tetrix)
 
+/* Motor Roles:
+ * - ExampleMotor: Does things
+ * 
+ * TODO: add more of this
+ */
+
 //#define ENABLE_LATCH
 //#define ENABLE_ARM
 //#define ENABLE_CLAW
