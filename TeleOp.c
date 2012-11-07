@@ -62,6 +62,8 @@ task main() {
 
         if(joy1Btn(8)) {
             scale = SLOW_SCALE;
+        } else {
+            scale = NORMAL_SCALE;
         }
         omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale, joystick.joy1_x2);
         if(joy1Btn(5)) {
