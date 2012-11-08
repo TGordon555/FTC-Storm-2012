@@ -46,6 +46,7 @@ const int presets[4] = {0, 360,  720, 1080};
 #define SLOW_SCALE 0.5
 float scale = NORMAL_SCALE;
 task main() {
+       int encoder = 0
     while(true) {
         getJoystickSettings(joystick);
 
@@ -92,9 +93,10 @@ task main() {
 
 #endif
 
+
+int preset = 0;
 #ifdef ENABLE_MACRO_BUTTONS
 	//checks if arm has reached target
-int preset;
 	if(joy1Btn(1)){
 		preset = 1;
 	}
@@ -130,7 +132,6 @@ int preset;
 #endif
 
 #ifdef ENABLE_MACRO_BUTTONS
-        int encoder;
         encoder += nMotorEncoder[motorH];
         nMotorEncoder[motorH] = 0;
         if (preset >= 0){
