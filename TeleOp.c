@@ -192,6 +192,7 @@ void armMacro(int gotoHeight, bool moving) {
 	}
 	else {
 	currentHeight = currentHeight + nMotorEncoder[MotorH];
+	nMotorEncoder[MotorH] = 0;
 	}
 	
 }
