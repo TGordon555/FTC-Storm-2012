@@ -45,8 +45,9 @@ void latchrelease();
 void armMove(bool moveUp);
 #endif
 #ifdef ENABLE_MACRO_BUTTONS
-int currentHeight = 0, targetHeight;
-void armMacro(int gotoHeight, bool moving);
+//Refine presets
+void armMacro (int set, int sensor);
+const int presets[4] = {0, 360,  720, 1080};
 #endif
 #define NORMAL_SCALE 1.0
 #define SLOW_SCALE 0.5
@@ -54,23 +55,6 @@ float scale = NORMAL_SCALE;
 task main() {
     while(true) {
         getJoystickSettings(joystick);
-
-#ifdef ENABLE_ARM
-
-        if(joy1Btn(7) && joy1Btn(5)) {
-            //if both 7 and 5 are depressed DO NOTHING!
-            writeDebugStreamLine("Both #5 and #7 depressed");
-        } else if(joy1Btn(7)) {
-		//Call are movement function; move down
-            armMove(false);
-            writeDebugStreamLine("joy1_btn 7 depressed; armMove false initiated");
-        } else if(joy1Btn(5)) {
-            //call arm movement function; Move up
-            armMove(true);
-            writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
-	}
-
-#endif
 
 #ifdef ENABLE_LATCH
 
@@ -117,22 +101,56 @@ task main() {
 
 #ifdef ENABLE_MACRO_BUTTONS
 	//checks if arm has reached target
-	armMacro(0,true);
-	if(joy1btn(1)){
-		armMacro(0, false);
+int preset;
+	if(joy1Btn(1)){
+		preset = 1;
 	}
-	if(joy1btn(2)){
-		armMacro(1, false);
+	if(joy1Btn(2)){
+		preset = 2;
 	}
-	if(joy1btn(3)){
-		armMacro(2, false);
+	if(joy1Btn(3)){
+		preset = 3;
 	}
-	if(joy1btn(4)){
-		armMacro(3, false);
+	if(joy1Btn(4)){
+		preset = 4;
 	}
 #endif
+
+#ifdef ENABLE_ARM
+
+        if(joy1Btn(7) && joy1Btn(5)) {
+            //if both 7 and 5 are depressed DO NOTHING!
+            writeDebugStreamLine("Both #5 and #7 depressed");
+            preset = -1;
+        } else if(joy1Btn(7)) {
+		//Call are movement function; move down
+            armMove(false);
+            preset = -1;
+            writeDebugStreamLine("joy1_btn 7 depressed; armMove false initiated");
+        } else if(joy1Btn(5)) {
+            //call arm movement function; Move up
+            armMove(true);
+            preset = -1;
+            writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
+	}
+
+#endif
+
+#ifdef ENABLE_MACRO_BUTTONS
+        int encoder;
+        encoder += nMotorEncoder[motorH];
+        nMotorEncoder[motorH] = 0;
+        if (preset >= 0){
+            armMacro(presets[preset], encoder);
+		}else{
+
+		}
+
+#endif
+
     }
 }
+
 
 //float scale: multiplies by the scale factor to receive new speed
 void omniDrive(int joyx, int joyy, float scale, int joyspin) {
@@ -167,46 +185,28 @@ void latchrelease() {
 
 void armMove(bool moveUp) {
     //TODO: Tune movement speed
-    const float armSpeed = 50;
+    #define ARM_SPEED 50
     //TODO: Motor designation changed
     if(moveUp) {
-        motor[motorH] = armSpeed;
+        motor[motorH] = ARM_SPEED;
     } else {
-        motor[motorH] = - armSpeed;
+        motor[motorH] = - ARM_SPEED;
     }
 }
 
 #endif
 
 #ifdef ENABLE_MACRO_BUTTONS
-//Assumes that arm has locking ability
-//TODO: Test this code EXTENSIVLEY
-void armMacro(int gotoHeight, bool moving) {
-//TODO: Refine levels() values
-	int levels(4) = {0, 360, 720, 1080};
-	if (!moving){
-		targetHeight = levels(gotoHeight) - currentHeight;
-		//TODO: Determine proper motor designation
-		nMotorEncoder[MotorH] = 0;
-		//TODO: Determine proper motor speed
-		if (targetHeight > 0)
-		motor[MotorH] = 75;
-		else if (targetHeight < 0)
-		motor[MotorH] = -75;
-		else
-		motor[MotorH] = 0;
-		writedebugstreamline("Arm already at destination height")
-	}
-	else {
-	if (currentHeight = targetHeight){
-		motor[MotorH] = 0;
-		writedebugstreamline("Arm reached destination height")
-	}
-	else {
-	currentHeight = currentHeight + nMotorEncoder[MotorH];
-	nMotorEncoder[MotorH] = 0;
-	}
 
+void armMacro (int set, int sensor){
+#define KP 1
+#define MIN_ERR 15
+	int err = set - sensor;
+	if (abs(err) <= MIN_ERR){
+		motor[motorH] = KP * err;
+	}else{
+		motor[motorH] = 0;
+	}
 }
 
 #endif
