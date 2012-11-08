@@ -123,7 +123,7 @@ task main() {
 	if(joy1btn(4)){
 		armMacro(3, false);
 	}
-#ifdef
+#endif
     }
 }
 
@@ -194,8 +194,7 @@ void armMacro(int gotoHeight, bool moving) {
 	currentHeight = currentHeight + nMotorEncoder[MotorH];
 	nMotorEncoder[MotorH] = 0;
 	}
-	
+
 }
 
 #endif
-
