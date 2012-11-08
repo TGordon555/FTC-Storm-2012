@@ -158,9 +158,9 @@ void armMove(bool moveUp) {
     const float armSpeed = 50;
     //TODO: Motor designation changed
     if(moveUp) {
-        motor[motorI] = armSpeed;
+        motor[motorH] = armSpeed;
     } else {
-        motor[motorI] = - armSpeed;
+        motor[motorH] = - armSpeed;
     }
 }
 
