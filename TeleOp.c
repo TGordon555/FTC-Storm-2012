@@ -128,8 +128,9 @@ int preset = 0;
             armMove(true);
             preset = -1;
             writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
-	}
-
+	    }else{
+	    motor[motorH] = 0;
+}
 #endif
 
 #ifdef ENABLE_MACRO_BUTTONS
