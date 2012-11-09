@@ -50,15 +50,6 @@ task main() {
     while(true) {
         getJoystickSettings(joystick);
 
-#ifdef ENABLE_LATCH
-
-        if(joy1Btn(10) && joy1Btn(9)) {
-            //Release Latch
-            latchrelease();
-            break;
-        }
-
-#endif
 //see if btn 8 is depressed, if so sets a scale factor for all movement calculations in omnidrive function
         if(joy1Btn(8)) {
             scale = SLOW_SCALE;
@@ -144,6 +135,16 @@ int preset = 0;
 
 #endif
 
+#ifdef ENABLE_LATCH
+
+        if(joy1Btn(10) && joy1Btn(9)) {
+            //Release Latch
+            latchrelease(encoder);
+            break;
+        }
+
+#endif
+
     }
     writeDebugStreamLine("Main execution aborted");
 }
@@ -166,15 +167,22 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 
 #ifdef ENABLE_LATCH
 
-void latchrelease() {
+void latchrelease(int armPos) {
     writeDebugStreamLine("Latch Release initiated.");
     #define LATCH_TARGET 270
-    int latchEncoder = 0;
+    #define ARM_TARGET
+    int latchEncoder = 0, armEncoder = 0;
     //TODO: test latch release
     motor[motorA] = 50;
     while (latchEncoder < LATCH_TARGET){
         latchEncoder += nMotorEncoder[motorA];
         nMotorEncoder[motorA] = 0;
+    }
+    motor[motorA] = 0;
+    motor[motorH] = 0;
+    while (armEncoder < ARM_TARGET - armPos) {
+            armEncoder += nMotorEncoder[motorH];
+            nMotorEncoder[motorH] = 0;
     }
     writeDebugStreamLine("Latch release completed.");
 }
