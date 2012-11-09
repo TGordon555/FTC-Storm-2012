@@ -46,15 +46,16 @@ const int presets[4] = {0, 360,  720, 1080};
 #define SLOW_SCALE 0.5
 float scale = NORMAL_SCALE;
 task main() {
-       int encoder = 0
+    int encoder = 0;
     while(true) {
         getJoystickSettings(joystick);
 
 #ifdef ENABLE_LATCH
 
-        if(joy1Btn(10)) {
+        if(joy1Btn(10) && joy1Btn(9)) {
             //Release Latch
             latchrelease();
+            break;
         }
 
 #endif
@@ -143,6 +144,7 @@ int preset = 0;
 #endif
 
     }
+    writeDebugStreamLine("Main execution aborted");
 }
 
 
