@@ -2,11 +2,10 @@
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motorD,        tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C1_2,     motorE,        tmotorTetrix, openLoop, reversed, encoder)
-#pragma config(Motor,  mtr_S1_C2_1,      ,             tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C2_2,     motorG,        tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     motorD,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     motorE,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_2,     motorG,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop, reversed, encoder)
 #pragma config(Motor,  mtr_S1_C4_2,     motorF,        tmotorTetrix, openLoop, reversed)
 #pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
@@ -33,7 +32,7 @@
  */
 
 //#define ENABLE_LATCH
-//#define ENABLE_ARM
+#define ENABLE_ARM
 //#define ENABLE_CLAW
 //#define ENABLE_MACRO_BUTTONS
 
@@ -42,7 +41,7 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin);
 void latchrelease();
 #endif
 #ifdef ENABLE_ARM
-void armMove(bool moveUp);
+void armMove(int moveUp);
 #endif
 #ifdef ENABLE_MACRO_BUTTONS
 //Refine presets
@@ -76,7 +75,7 @@ task main() {
         }
         if (joy1Btn(7)) {
             motor[motorH]=-50;
-	}*/
+        }*/
 
 #ifdef ENABLE_CLAW
 
@@ -99,21 +98,21 @@ task main() {
 
 #endif
 
+        int preset;
+
 #ifdef ENABLE_MACRO_BUTTONS
-	//checks if arm has reached target
-int preset;
-	if(joy1Btn(1)) {
-		preset = 1;
-	}
-	if(joy1Btn(2)) {
-		preset = 2;
-	}
-	if(joy1Btn(3)) {
-		preset = 3;
-	}
-	if(joy1Btn(4)) {
-		preset = 4;
-	}
+        if(joy1Btn(1)) {
+            preset = 1;
+        }
+        if(joy1Btn(2)) {
+            preset = 2;
+        }
+        if(joy1Btn(3)) {
+            preset = 3;
+        }
+        if(joy1Btn(4)) {
+            preset = 4;
+        }
 #endif
 
 #ifdef ENABLE_ARM
@@ -122,16 +121,20 @@ int preset;
             //if both 7 and 5 are depressed DO NOTHING!
             writeDebugStreamLine("Both #5 and #7 depressed");
             preset = -1;
+            armMove(0);
         } else if(joy1Btn(7)) {
 		//Call are movement function; move down
-            armMove(false);
+            armMove(-1);
             preset = -1;
             writeDebugStreamLine("joy1_btn 7 depressed; armMove false initiated");
         } else if(joy1Btn(5)) {
             //call arm movement function; Move up
-            armMove(true);
+            armMove(1);
             preset = -1;
             writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
+	}
+	else {
+	    armMove(0);
 	}
 
 #endif
@@ -183,14 +186,17 @@ void latchrelease() {
 
 #ifdef ENABLE_ARM
 
-void armMove(bool moveUp) {
+void armMove(int moveUp) {
     //TODO: Tune movement speed
-    #define ARM_SPEED 50
+    #define ARM_SPEED 40
     //TODO: Motor designation changed
-    if(moveUp) {
+    if(moveUp>0) {
         motor[motorH] = ARM_SPEED;
-    } else {
+    } else if(moveUp<0){
         motor[motorH] = - ARM_SPEED;
+    }
+    else{
+        motor[motorH] = 0;
     }
 }
 
