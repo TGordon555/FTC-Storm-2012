@@ -52,14 +52,16 @@ const int presets[4] = {0, 360,  720, 1080};
 #define SLOW_SCALE 0.5
 float scale = NORMAL_SCALE;
 task main() {
+    int encoder = 0;
     while(true) {
         getJoystickSettings(joystick);
 
 #ifdef ENABLE_LATCH
 
-        if(joy1Btn(10)) {
+        if(joy1Btn(10) && joy1Btn(9)) {
             //Release Latch
             latchrelease();
+            break;
         }
 
 #endif
@@ -98,7 +100,7 @@ task main() {
 
 #endif
 
-        int preset;
+        int preset = 0;
 
 #ifdef ENABLE_MACRO_BUTTONS
         if(joy1Btn(1)) {
@@ -140,7 +142,6 @@ task main() {
 #endif
 
 #ifdef ENABLE_MACRO_BUTTONS
-        int encoder;
         encoder += nMotorEncoder[motorH];
         nMotorEncoder[motorH] = 0;
         if(preset >= 0) {
@@ -152,6 +153,7 @@ task main() {
 #endif
 
     }
+    writeDebugStreamLine("Main execution aborted");
 }
 
 
@@ -178,8 +180,16 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 #ifdef ENABLE_LATCH
 
 void latchrelease() {
-    //TODO: write latch release
-    writeDebugStreamLine("Latch Release initiated");
+    writeDebugStreamLine("Latch Release initiated.");
+    #define LATCH_TARGET 270
+    int latchEncoder = 0;
+    //TODO: test latch release
+    motor[motorA] = 50;
+    while (latchEncoder < LATCH_TARGET){
+        latchEncoder += nMotorEncoder[motorA];
+        nMotorEncoder[motorA] = 0;
+    }
+    writeDebugStreamLine("Latch release completed.");
 }
 
 #endif
