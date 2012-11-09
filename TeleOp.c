@@ -102,16 +102,16 @@ task main() {
 #ifdef ENABLE_MACRO_BUTTONS
 	//checks if arm has reached target
 int preset;
-	if(joy1Btn(1)){
+	if(joy1Btn(1)) {
 		preset = 1;
 	}
-	if(joy1Btn(2)){
+	if(joy1Btn(2)) {
 		preset = 2;
 	}
-	if(joy1Btn(3)){
+	if(joy1Btn(3)) {
 		preset = 3;
 	}
-	if(joy1Btn(4)){
+	if(joy1Btn(4)) {
 		preset = 4;
 	}
 #endif
@@ -140,11 +140,11 @@ int preset;
         int encoder;
         encoder += nMotorEncoder[motorH];
         nMotorEncoder[motorH] = 0;
-        if (preset >= 0){
+        if(preset >= 0) {
             armMacro(presets[preset], encoder);
-		}else{
+        } else {
 
-		}
+        }
 
 #endif
 
@@ -201,12 +201,12 @@ void armMove(bool moveUp) {
 void armMacro (int set, int sensor){
 #define KP 1
 #define MIN_ERR 15
-	int err = set - sensor;
-	if (abs(err) <= MIN_ERR){
-		motor[motorH] = KP * err;
-	}else{
-		motor[motorH] = 0;
-	}
+    int err = set - sensor;
+    if(abs(err) <= MIN_ERR){
+        motor[motorH] = KP * err;
+    } else {
+        motor[motorH] = 0;
+    }
 }
 
 #endif
