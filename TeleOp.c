@@ -6,7 +6,7 @@
 #pragma config(Motor,  mtr_S1_C1_2,     frontLeft,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_1,     frontRight,    tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_2,     backLeft,      tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C4_1,     armMotor,      tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
@@ -59,7 +59,7 @@ task main() {
 
 #ifdef ENABLE_LATCH
 
-        if(joy1Btn(10) && joy1Btn(9)) {
+        if(joy1Btn(10) && joy1Btn(9) && joy2Btn(10) && joy2Btn(9)) {
             //Release Latch
             latchrelease();
             break;
@@ -82,7 +82,7 @@ task main() {
 
 #ifdef ENABLE_CLAW
 
-        switch(joystick.joy1_TopHat) {
+        switch(joystick.joy2_TopHat) {
         case 0:
         case 1:
         case 7:
@@ -104,37 +104,37 @@ task main() {
         int preset = 0;
 
 #ifdef ENABLE_MACRO_BUTTONS
-        if(joy1Btn(1)) {
+        if(joy2Btn(1)) {
             preset = 1;
         }
-        if(joy1Btn(2)) {
+        if(joy2Btn(2)) {
             preset = 2;
         }
-        if(joy1Btn(3)) {
+        if(joy2Btn(3)) {
             preset = 3;
         }
-        if(joy1Btn(4)) {
+        if(joy2Btn(4)) {
             preset = 4;
         }
 #endif
 
 #ifdef ENABLE_ARM
 
-        if(joy1Btn(7) && joy1Btn(5)) {
+        if(joy2Btn(7) && joy2Btn(5)) {
             //if both 7 and 5 are depressed DO NOTHING!
             writeDebugStreamLine("Both #5 and #7 depressed");
             preset = -1;
             armMove(0);
-        } else if(joy1Btn(7)) {
+        } else if(joy2Btn(5)) {
 		//Call are movement function; move down
             armMove(-1);
             preset = -1;
-            writeDebugStreamLine("joy1_btn 7 depressed; armMove false initiated");
-        } else if(joy1Btn(5)) {
+            writeDebugStreamLine("joy1_btn 5 depressed; armMove false initiated");
+        } else if(joy2Btn(7)) {
             //call arm movement function; Move up
             armMove(1);
             preset = -1;
-            writeDebugStreamLine("joy1_btn 5 depressed; armMove true initiated");
+            writeDebugStreamLine("joy1_btn 7 depressed; armMove true initiated");
 	}
 	else {
 	    armMove(0);
@@ -202,12 +202,12 @@ void armMove(int moveUp) {
     #define ARM_SPEED 40
     //TODO: Motor designation changed
     if(moveUp>0) {
-        motor[motorH] = ARM_SPEED;
+        motor[armMotor] = ARM_SPEED;
     } else if(moveUp<0){
-        motor[motorH] = - ARM_SPEED;
+        motor[armMotor] = - ARM_SPEED;
     }
     else{
-        motor[motorH] = 0;
+        motor[armMotor] = 0;
     }
 }
 
@@ -220,9 +220,9 @@ void armMacro (int set, int sensor){
 #define MIN_ERR 15
     int err = set - sensor;
     if(abs(err) <= MIN_ERR){
-        motor[motorH] = KP * err;
+        motor[armMotor] = KP * err;
     } else {
-        motor[motorH] = 0;
+        motor[armMotor] = 0;
     }
 }
 
