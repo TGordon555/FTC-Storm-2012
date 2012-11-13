@@ -132,9 +132,9 @@ task main() {
 #endif
 
 #ifdef ENABLE_MACRO_BUTTONS
-        // NOTE: If the arm motor can turn more than 32,767 degrees in 
-        //       either direction, the encoder value cannot be relied upon 
-        //       alone, and a separate variable (preferably a long) should 
+        // NOTE: If the arm motor can turn more than 32,767 degrees in
+        //       either direction, the encoder value cannot be relied upon
+        //       alone, and a separate variable (preferably a long) should
         //       be used to accumulate encoder ticks.
         if(preset >= 0) {
             armMacro(presets[preset], nMotorEncoder[motorH]);
