@@ -200,6 +200,12 @@ void latchrelease(int armPos) {
             armEncoder += nMotorEncoder[motorH];
             nMotorEncoder[motorH] = 0;
     }
+    motor[motorA] = 0;
+    motor[motorH] = 0;
+    while (armEncoder < ARM_TARGET - armPos) {
+            armEncoder += nMotorEncoder[motorH];
+            nMotorEncoder[motorH] = 0;
+    }
     writeDebugStreamLine("Latch release completed.");
 }
 
