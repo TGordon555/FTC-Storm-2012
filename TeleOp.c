@@ -187,13 +187,9 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 
 void latchrelease(int armPos) {
     writeDebugStreamLine("Latch Release initiated.");
-<<<<<<< HEAD
     #define LATCH_TARGET 270
     #define ARM_TARGET
     int latchEncoder = 0, armEncoder = 0;
-=======
-#define LATCH_TARGET 270
->>>>>>> 55b7987cd040e2edaa99a1cf4bf4a37cafa1a331
     //TODO: test latch release
     while(nMotorEncoder[motorA] < LATCH_TARGET) {
         motor[motorA] = 50;
