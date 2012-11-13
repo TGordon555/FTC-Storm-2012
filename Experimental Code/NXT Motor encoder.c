@@ -19,7 +19,7 @@ nMotorEncoder[motorG] = 0;
 nMotorEncoder[motorH] = 0;
 nMotorEncoder[motorI] = 0;
 while(true){
-	if (nNxtButtonPressed == 2){
+	if (nNxtButtonPressed == 3){
 		nMotorEncoder[motorA] = 0;
 		nMotorEncoder[motorB] = 0;
 		nMotorEncoder[motorC] = 0;
