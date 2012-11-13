@@ -2,11 +2,12 @@
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     motorD,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,     motorE,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_2,     motorG,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop, reversed, encoder)
-#pragma config(Motor,  mtr_S1_C4_2,     motorF,        tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_1,     backRight,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_2,     frontLeft,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     frontRight,    tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_2,     backLeft,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
@@ -170,11 +171,11 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 		topLeft = (upRightSpeed + spin) * scale;
 		bottomRight = (upRightSpeed - spin) * scale;
 		bottomLeft = (upLeftSpeed  + spin) * scale;
-    motor[motorE] = topLeft;
-    motor[motorD] = bottomRight;
-    motor[motorG] = bottomLeft;
-    motor[motorF] = topRight;
-    writeDebugStreamLine("motorF:%d,motorE:%d,motorD:%d,motorG:%d", topRight,topLeft,bottomRight,bottomLeft);
+    motor[frontLeft] = topLeft;
+    motor[backRight] = bottomRight;
+    motor[backLeft] = bottomLeft;
+    motor[frontRight] = topRight;
+    writeDebugStreamLine("frontRight:%d,frontLeft:%d,backRight:%d,backLeft:%d", topRight,topLeft,bottomRight,bottomLeft);
 }
 
 #ifdef ENABLE_LATCH
