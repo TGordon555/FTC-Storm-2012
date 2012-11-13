@@ -59,15 +59,6 @@ task main() {
     while(true) {
         getJoystickSettings(joystick);
 
-#ifdef ENABLE_LATCH
-
-        if(joy1Btn(10) && joy1Btn(9)) {
-            //Release Latch
-            latchrelease();
-            break;
-        }
-
-#endif
         //see if btn 8 is depressed.
         //if so set a scale factor for all movement calculations
         //in omnidrive function
@@ -152,12 +143,22 @@ task main() {
 
 #endif
 
+#ifdef ENABLE_LATCH
+
+        if(joy1Btn(10) && joy1Btn(9)) {
+            //Release Latch
+            latchrelease(encoder);
+            break;
+        }
+
+#endif
+
     }
     writeDebugStreamLine("Main execution aborted");
 }
 
-int min(int a,int b) {
-    return a<b ? a : b;
+int clamp(int x,int min,int max) {
+    return x < min ? min : x > max ? max : x;
 }
 
 //float scale: multiplies by the scale factor to receive new speed
@@ -169,10 +170,10 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
 
-    int frontRight  = min(100,upLeftSpeed  - spin) * scale,
-        frontLeft   = min(100,upRightSpeed + spin) * scale,
-        bottomRight = min(100,upRightSpeed - spin) * scale,
-        bottomLeft  = min(100,upLeftSpeed  + spin) * scale;
+    int frontRight  = clamp(upLeftSpeed  - spin,-100,100) * scale,
+        frontLeft   = clamp(upRightSpeed + spin,-100,100) * scale,
+        bottomRight = clamp(upRightSpeed - spin,-100,100) * scale,
+        bottomLeft  = clamp(upLeftSpeed  + spin,-100,100) * scale;
 
     motor[frontLeftMotor]  = frontLeft;
     motor[backRightMotor]  = bottomRight;
@@ -184,12 +185,20 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 
 #ifdef ENABLE_LATCH
 
-void latchrelease() {
+void latchrelease(int armPos) {
     writeDebugStreamLine("Latch Release initiated.");
 #define LATCH_TARGET 270
+#define ARM_TARGET
+    int latchEncoder = 0, armEncoder = 0;
     //TODO: test latch release
     while(nMotorEncoder[motorA] < LATCH_TARGET) {
         motor[motorA] = 50;
+    }
+    motor[motorA] = 0;
+    motor[motorH] = 0;
+    while (armEncoder < ARM_TARGET - armPos) {
+            armEncoder += nMotorEncoder[motorH];
+            nMotorEncoder[motorH] = 0;
     }
     writeDebugStreamLine("Latch release completed.");
 }
@@ -205,7 +214,7 @@ void armMove(int moveUp) {
     if(moveUp>0) {
         motor[motorH] = ARM_SPEED;
     } else if(moveUp<0) {
-        motor[motorH] = - ARM_SPEED;
+        motor[motorH] = -ARM_SPEED;
     } else {
         motor[motorH] = 0;
     }
@@ -221,7 +230,7 @@ void armMacro(int set, int sensor) {
 #define ARM_SPEEDLIMIT 50
     int err = set - sensor;
     if(abs(err) <= MIN_ERR) {
-        motor[motorH] = min(ARM_SPEEDLIMIT,KP * err);
+        motor[motorH] = clamp(KP * err,-ARM_SPEEDLIMIT,ARM_SPEEDLIMIT);
     } else {
         motor[motorH] = 0;
     }
