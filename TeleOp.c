@@ -2,12 +2,13 @@
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
-#pragma config(Motor,  mtr_S1_C1_1,     backRightMotor,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,     frontLeftMotor,        tmotorTetrix, openLoop, reversed)
-#pragma config(Motor,  mtr_S1_C2_2,     backLeftMotor,        tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C4_1,     motorH,        tmotorTetrix, openLoop, reversed, encoder)
-#pragma config(Motor,  mtr_S1_C4_2,     frontRightMotor,        tmotorTetrix, openLoop, reversed)
-#pragma config(Servo,  srvo_S1_C3_1,    clawServo,               tServoStandard)
+#pragma config(Motor,  mtr_S1_C1_1,     backRight,     tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C1_2,     frontLeft,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C2_1,     frontRight,    tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C2_2,     backLeft,      tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_1,     armMotor,      tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
+#pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
@@ -72,7 +73,7 @@ task main() {
 
 #ifdef ENABLE_CLAW
 
-        switch(joystick.joy1_TopHat) {
+        switch(joystick.joy2_TopHat) {
         case 0:
         case 1:
         case 7:
@@ -94,23 +95,23 @@ task main() {
         int preset = -1;
 
 #ifdef ENABLE_MACRO_BUTTONS
-        if(joy1Btn(1)) {
+        if(joy2Btn(1)) {
             preset = 1;
         }
-        if(joy1Btn(2)) {
+        if(joy2Btn(2)) {
             preset = 2;
         }
-        if(joy1Btn(3)) {
+        if(joy2Btn(3)) {
             preset = 3;
         }
-        if(joy1Btn(4)) {
+        if(joy2Btn(4)) {
             preset = 4;
         }
 #endif
 
 #ifdef ENABLE_ARM
 
-        if(joy1Btn(7) && joy1Btn(5)) {
+        if(joy2Btn(7) && joy2Btn(5)) {
             //if both 7 and 5 are depressed DO NOTHING!
             preset = -1;
             armMove(0);
@@ -146,7 +147,7 @@ task main() {
 
 #ifdef ENABLE_LATCH
 
-        if(joy1Btn(10) && joy1Btn(9)) {
+        if(joy1Btn(10) && joy1Btn(9) && joy2Btn(10) && joy2Btn(9)) {
             //Release Latch
             latchrelease(encoder);
             break;
@@ -158,8 +159,8 @@ task main() {
     writeDebugStreamLine("Main execution aborted");
 }
 
-int min(int a,int b) {
-    return a<b ? a : b;
+int clamp(int x,int min,int max) {
+    return x < min ? min : x > max ? max : x;
 }
 
 //float scale: multiplies by the scale factor to receive new speed
@@ -170,6 +171,7 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
+
 
     int frontRight  = min(100,upLeftSpeed  - spin) * scale,
         frontLeft   = min(100,upRightSpeed + spin) * scale,
@@ -187,12 +189,18 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
 
 void latchrelease(int armPos) {
     writeDebugStreamLine("Latch Release initiated.");
-    #define LATCH_TARGET 270
-    #define ARM_TARGET
+#define LATCH_TARGET 270
+#define ARM_TARGET
     int latchEncoder = 0, armEncoder = 0;
     //TODO: test latch release
     while(nMotorEncoder[motorA] < LATCH_TARGET) {
         motor[motorA] = 50;
+    }
+    motor[motorA] = 0;
+    motor[motorH] = 0;
+    while (armEncoder < ARM_TARGET - armPos) {
+            armEncoder += nMotorEncoder[motorH];
+            nMotorEncoder[motorH] = 0;
     }
     motor[motorA] = 0;
     motor[motorH] = 0;
@@ -230,9 +238,9 @@ void armMacro(int set, int sensor) {
 #define ARM_SPEEDLIMIT 50
     int err = set - sensor;
     if(abs(err) <= MIN_ERR) {
-        motor[motorH] = min(ARM_SPEEDLIMIT,KP * err);
+        motor[motorH] = clamp(KP * err,-ARM_SPEEDLIMIT,ARM_SPEEDLIMIT);
     } else {
-        motor[motorH] = 0;
+        motor[armMotor] = 0;
     }
 }
 
