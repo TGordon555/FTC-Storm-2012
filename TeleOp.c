@@ -171,17 +171,17 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
 
-    int frontRight  = clamp(upLeftSpeed  - spin,-100,100) * scale,
-        frontLeft   = clamp(upRightSpeed + spin,-100,100) * scale,
-        bottomRight = clamp(upRightSpeed - spin,-100,100) * scale,
-        bottomLeft  = clamp(upLeftSpeed  + spin,-100,100) * scale;
+    int frontRightSpeed = clamp(upLeftSpeed  - spin,-100,100) * scale,
+        frontLeftSpeed  = clamp(upRightSpeed + spin,-100,100) * scale,
+        backRightSpeed  = clamp(upRightSpeed - spin,-100,100) * scale,
+        backLeftSpeed   = clamp(upLeftSpeed  + spin,-100,100) * scale;
 
-    motor[frontLeftMotor]  = frontLeft;
-    motor[backRightMotor]  = bottomRight;
-    motor[backLeftMotor]   = bottomLeft;
-    motor[frontRightMotor] = frontRight;
+    motor[frontLeft]  = frontLeftSpeed;
+    motor[backRight]  = backRightSpeed;
+    motor[backLeft]   = backLeftSpeed;
+    motor[frontRight] = frontRightSpeed;
 
-    writeDebugStreamLine("frontRightMotor:%d,frontLeftMotor:%d,backRightMotor:%d,backLeftMotor:%d", frontRight,frontLeft,bottomRight,bottomLeft);
+    writeDebugStreamLine("frontRight:%d,frontLeft:%d,backRight:%d,backLeft:%d", frontRightSpeed,frontLeftSpeed,backRightSpeed,backLeftSpeed);
 }
 
 #ifdef ENABLE_LATCH
