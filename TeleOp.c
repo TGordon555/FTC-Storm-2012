@@ -58,14 +58,15 @@ task main() {
     int encoder = 0;
     while(true) {
         getJoystickSettings(joystick);
-
         //see if btn 8 is depressed.
         //if so set a scale factor for all movement calculations
         //in omnidrive function
         if(joy1Btn(8)) {
+        		writeDebugStreamLine("btn 8 depressed");
             scale = SLOW_SCALE;
         } else {
             scale = NORMAL_SCALE;
+            writeDebugStreamLine("btn 8 not depressed");
         }
         omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale, joystick.joy1_x2);
 
@@ -90,7 +91,7 @@ task main() {
 
 #endif
 
-        int preset = 0;
+        int preset = -1;
 
 #ifdef ENABLE_MACRO_BUTTONS
         if(joy1Btn(1)) {
@@ -174,13 +175,12 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
         frontLeft   = min(100,upRightSpeed + spin) * scale,
         bottomRight = min(100,upRightSpeed - spin) * scale,
         bottomLeft  = min(100,upLeftSpeed  + spin) * scale;
-
     motor[frontLeftMotor]  = frontLeft;
     motor[backRightMotor]  = bottomRight;
     motor[backLeftMotor]   = bottomLeft;
     motor[frontRightMotor] = frontRight;
 
-    writeDebugStreamLine("frontRightMotor:%d,frontLeftMotor:%d,backRightMotor:%d,backLeftMotor:%d", frontRight,frontLeft,bottomRight,bottomLeft);
+    //writeDebugStreamLine("frontRightMotor:%d,frontLeftMotor:%d,backRightMotor:%d,backLeftMotor:%d", frontRight,frontLeft,bottomRight,bottomLeft);
 }
 
 #ifdef ENABLE_LATCH
@@ -212,11 +212,11 @@ void armMove(int moveUp) {
 #define ARM_SPEED 40
     //TODO: Motor designation changed
     if(moveUp>0) {
-        motor[motorH] = ARM_SPEED;
+        motor[motorA] = ARM_SPEED;
     } else if(moveUp<0) {
-        motor[motorH] = - ARM_SPEED;
+        motor[motorA] = - ARM_SPEED;
     } else {
-        motor[motorH] = 0;
+        motor[motorA] = 0;
     }
 }
 
