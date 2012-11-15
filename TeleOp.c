@@ -1,5 +1,6 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTServo,  HTMotor)
 #pragma config(Sensor, S1,     ,               sensorI2CMuxController)
+#pragma config(Motor,  motorA,           ,             tmotorNXT, openLoop, encoder)
 #pragma config(Motor,  motorB,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  motorC,           ,             tmotorNXT, openLoop)
 #pragma config(Motor,  mtr_S1_C1_1,     backRight,     tmotorTetrix, openLoop, reversed)
@@ -84,7 +85,7 @@ task main() {
             armRoughSetpoint = scaleJoystickValue(ARM_MIN,
                                                   ARM_MAX,
                                                   joystick.joy2_y1);
-            armFineSetpoint = 0
+            armFineSetpoint = 0;
         }
         if(joy2Btn(6)) {
             armFineSetpoint = scaleJoystickValue(-ARM_FINE_RANGE,
@@ -109,13 +110,13 @@ task main() {
         case 0:
         case 1:
         case 7:
-            servo[clawServo] = 40;
+            servo[clawServo] += 0.5;
             break;
 
         case 5:
         case 4:
         case 3:
-            servo[clawServo] = -40;
+            servo[clawServo] += -0.5;
             break;
 
         default:
@@ -182,4 +183,3 @@ void releaseRamp() {
 }
 
 #endif
-
