@@ -25,4 +25,10 @@ void omniDrive(OmniMotors motors,float x, float y, float scale, float spin) {
     //writeDebugStreamLine("frontRight:%d,frontLeft:%d,backRight:%d,backLeft:%d", frontRightSpeed,frontLeftSpeed,backRightSpeed,backLeftSpeed);
 }
 
+void omniDrivePolar(OmniMotors motors,float speed,float angle) {
+    float x = speed*cosDegrees(angle),
+          y = speed*sinDegrees(angle);
+    omniDrive(motors,x,y,1,0);
+}
+
 #endif
