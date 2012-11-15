@@ -14,4 +14,10 @@ float scaleJoystickValue(float minOut,float maxOut,
     return scaleValue(-128,127,minOut,maxOut,value);
 }
 
+float clamp(float value,float min,float max) {
+    return value < min ? min :
+           value > max ? max :
+                         value;
+}
+
 #endif
