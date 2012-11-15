@@ -9,7 +9,7 @@
 #pragma config(Motor,  mtr_S1_C2_2,     backLeft,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_1,     armMotor,      tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_1,    clawServo,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
@@ -35,7 +35,7 @@
 
 //#define ENABLE_RAMP
 #define ENABLE_ARM
-//#define ENABLE_CLAW
+#define ENABLE_CLAW
 //#define COMPETITION
 
 void omniDrive(float x, float y, float scale, float spin);
@@ -68,6 +68,7 @@ task main() {
     float armRoughSetpoint = 0,
           armFineSetpoint  = 0;
 
+    float handServo = 0;
     while(true) {
         getJoystickSettings(joystick);
 
@@ -105,24 +106,40 @@ task main() {
 #endif
 
 #ifdef ENABLE_CLAW
-
+				#define HAND_SERVO_SPEED .10
+				if (joystick.joy2_TopHat != 0 || joystick.joy2_TopHat != 1 || joystick.joy2_TopHat != 2 || joystick.joy2_TopHat != 3 || joystick.joy2_TopHat != 4 || joystick.joy2_TopHat != 5 || joystick.joy2_TopHat != 6 || joystick.joy2_TopHat != 7){
+							ClearTimer(t1);
+							nxtDisplayTextLine(1, "Nothing pressed");
+				}
+				else if(time1[t1] > 500){
+						time1[t1] = 20;
+				}
         switch(joystick.joy2_TopHat) {
         case 0:
         case 1:
         case 7:
-            servo[clawServo] += 0.5;
+            handServo += time1[t1] * HAND_SERVO_SPEED;
+//            writeDebugStreamLine("%d", handServo);
             break;
 
         case 5:
         case 4:
         case 3:
-            servo[clawServo] += -0.5;
+            handServo += time1[t1] * - .05;
+//            writeDebugStreamLine("%d", handServo);
             break;
 
         default:
-            servo[clawServo] = 0;
+            //writeDebugStreamLine("%d", handServo);
         }
-
+        if (handServo >= 180){
+        	handServo = 180;
+      	}
+      	if (handServo <= 0){
+        	handServo = 0;
+      	}
+        servo[clawServo] = ceil(handServo - .05);
+				ClearTimer(t1);
 #endif
 
 #ifdef ENABLE_RAMP
@@ -158,7 +175,7 @@ void omniDrive(float x, float y, float scale, float spin) {
 #ifdef ENABLE_LATCH
 
 void releaseRamp() {
-    writeDebugStreamLine("Ramp release initiated.");
+    //writeDebugStreamLine("Ramp release initiated.");
 #define LATCH_TARGET 270
 #define ARM_TARGET
     int latchEncoder = 0, armEncoder = 0;
@@ -178,7 +195,7 @@ void releaseRamp() {
             armEncoder += nMotorEncoder[motorH];
             nMotorEncoder[motorH] = 0;
     }
-    writeDebugStreamLine("Latch release completed.");
+    //writeDebugStreamLine("Latch release completed.");
 }
 
 #endif
