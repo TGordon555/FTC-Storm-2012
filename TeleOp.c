@@ -137,7 +137,6 @@ task main() {
     writeDebugStreamLine("Main execution aborted");
 }
 
-//float scale: multiplies by the scale factor to receive new speed
 void omniDrive(float x, float y, float scale, float spin) {
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
