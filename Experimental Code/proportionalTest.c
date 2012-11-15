@@ -18,9 +18,13 @@ task main()
         getJoystickSettings(joystick);
         if(joy1Btn(5)) {
             roughSetpoint = scaleJoystickValue(-720,720,joystick.joy1_y1);
+            fineSetpoint = 0;
         }
         if(joy1Btn(6)) {
             fineSetpoint  = scaleJoystickValue(-90,90,joystick.joy1_y2);
+        } else {
+            roughSetpoint += fineSetpoint;
+            fineSetpoint = 0;
         }
         nxtDisplayCenteredTextLine(4,"%d: %d",joystick.joy1_y1,nMotorEncoder[motorA]);
         proportionalControl(motorA,settings,roughSetpoint+fineSetpoint);
