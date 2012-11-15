@@ -8,7 +8,7 @@
 #pragma config(Motor,  mtr_S1_C2_2,     backLeft,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_1,     armMotor,      tmotorTetrix, openLoop, encoder)
 #pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
-#pragma config(Servo,  srvo_S1_C3_1,    servo1,               tServoStandard)
+#pragma config(Servo,  srvo_S1_C3_1,    clawServo,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_4,    servo4,               tServoNone)
@@ -32,7 +32,7 @@
 
 //#define ENABLE_LATCH
 #define ENABLE_ARM
-//#define ENABLE_CLAW
+#define ENABLE_CLAW
 //#define ENABLE_MACRO_BUTTONS
 
 void omniDrive(int joyx, int joyy, float scale, int joyspin);
@@ -57,39 +57,55 @@ float scale = NORMAL_SCALE;
 
 task main() {
     int encoder = 0;
+    float handServo = 0;
     while(true) {
         getJoystickSettings(joystick);
+
         //see if btn 8 is depressed.
         //if so set a scale factor for all movement calculations
         //in omnidrive function
         if(joy1Btn(8)) {
-        		writeDebugStreamLine("btn 8 depressed");
             scale = SLOW_SCALE;
         } else {
             scale = NORMAL_SCALE;
-            writeDebugStreamLine("btn 8 not depressed");
         }
         omniDrive(joystick.joy1_x1, joystick.joy1_y1, scale, joystick.joy1_x2);
 
 #ifdef ENABLE_CLAW
-
+				#define HAND_SERVO_SPEED .10
+				if (joystick.joy2_TopHat != 0 || joystick.joy2_TopHat != 1 || joystick.joy2_TopHat != 2 || joystick.joy2_TopHat != 3 || joystick.joy2_TopHat != 4 || joystick.joy2_TopHat != 5 || joystick.joy2_TopHat != 6 || joystick.joy2_TopHat != 7){
+							ClearTimer(t1);
+							nxtDisplayTextLine(1, "Nothing pressed");
+				}
+				else if(time1[t1] > 500){
+						time1[t1] = 20;
+				}
         switch(joystick.joy2_TopHat) {
         case 0:
         case 1:
         case 7:
-            servo[clawServo] = 40;
+            handServo += time1[t1] * HAND_SERVO_SPEED;
+            writeDebugStreamLine("%d", handServo);
             break;
 
         case 5:
         case 4:
         case 3:
-            servo[clawServo] = -40;
+            handServo += time1[t1] * - .05;
+            writeDebugStreamLine("%d", handServo);
             break;
 
         default:
-            servo[clawServo] = 0;
+            writeDebugStreamLine("%d", handServo);
         }
-
+        if (handServo >= 180){
+        	handServo = 180;
+      	}
+      	if (handServo <= 0){
+        	handServo = 0;
+      	}
+        servo[clawServo] = ceil(handServo - .05);
+				ClearTimer(t1);
 #endif
 
         int preset = -1;
@@ -172,17 +188,17 @@ void omniDrive(int joyx, int joyy, float scale, int joyspin) {
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
 
+    int frontRightSpeed = clamp(upLeftSpeed  - spin,-100,100) * scale,
+        frontLeftSpeed  = clamp(upRightSpeed + spin,-100,100) * scale,
+        backRightSpeed  = clamp(upRightSpeed - spin,-100,100) * scale,
+        backLeftSpeed   = clamp(upLeftSpeed  + spin,-100,100) * scale;
 
-    int frontRight  = min(100,upLeftSpeed  - spin) * scale,
-        frontLeft   = min(100,upRightSpeed + spin) * scale,
-        bottomRight = min(100,upRightSpeed - spin) * scale,
-        bottomLeft  = min(100,upLeftSpeed  + spin) * scale;
-    motor[frontLeftMotor]  = frontLeft;
-    motor[backRightMotor]  = bottomRight;
-    motor[backLeftMotor]   = bottomLeft;
-    motor[frontRightMotor] = frontRight;
+    motor[frontLeft]  = frontLeftSpeed;
+    motor[backRight]  = backRightSpeed;
+    motor[backLeft]   = backLeftSpeed;
+    motor[frontRight] = frontRightSpeed;
 
-    //writeDebugStreamLine("frontRightMotor:%d,frontLeftMotor:%d,backRightMotor:%d,backLeftMotor:%d", frontRight,frontLeft,bottomRight,bottomLeft);
+    //writeDebugStreamLine("frontRight:%d,frontLeft:%d,backRight:%d,backLeft:%d", frontRightSpeed,frontLeftSpeed,backRightSpeed,backLeftSpeed);
 }
 
 #ifdef ENABLE_LATCH
@@ -220,11 +236,11 @@ void armMove(int moveUp) {
 #define ARM_SPEED 40
     //TODO: Motor designation changed
     if(moveUp>0) {
-        motor[motorA] = ARM_SPEED;
+        motor[motorH] = ARM_SPEED;
     } else if(moveUp<0) {
-        motor[motorA] = - ARM_SPEED;
+        motor[motorH] = -ARM_SPEED;
     } else {
-        motor[motorA] = 0;
+        motor[motorH] = 0;
     }
 }
 
