@@ -52,6 +52,9 @@ ProportionalSettings armSettings;
 #define ARM_MAX        720
 #define ARM_FINE_RANGE 90
 
+#define DRIVE_NORMAL_SCALE 1
+#define DRIVE_SLOW_SCALE   0.5
+
 task main() {
 #ifdef COMPETITION
     waitForStart();
@@ -72,7 +75,7 @@ task main() {
         //in omnidrive function
         omniDrive(scaleJoystickValue(-100,100,joystick.joy1_x1),
                   scaleJoystickValue(-100,100,joystick.joy1_y1),
-                  joy1Btn(8) ? SLOW_SCALE : NORMAL_SCALE,
+                  joy1Btn(8) ? DRIVE_SLOW_SCALE : DRIVE_NORMAL_SCALE,
                   scaleJoystickValue(-50,50,joystick.joy1_x2));
 
 #ifdef ENABLE_ARM
