@@ -3,14 +3,14 @@
 
 typedef struct {
     float kP;
-    float maxError;
+    float minError;
     float minOutput,maxOutput;
 } ProportionalSettings;
 
 bool proportionalControl(tMotor which,ProportionalSettings settings,float setpoint) {
     float error = setpoint - nMotorEncoder[which];
     bool ret = false;
-    if(abs(error) < abs(settings.maxError)) {
+    if(abs(error) < abs(settings.minError)) {
         error = 0;
         ret = true
     }
