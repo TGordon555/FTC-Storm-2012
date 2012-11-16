@@ -34,20 +34,30 @@
  */
 
 //#define ENABLE_RAMP
-#define ENABLE_ARM
+//#define ENABLE_ARM
 #define ENABLE_CLAW
 //#define COMPETITION
 
 void omniDrive(float x, float y, float scale, float spin);
 
 #ifdef ENABLE_RAMP
-void releaseRamp();
+#define RAMP_MAX_POWER  50
+#define RAMP_MAX_ERROR  15
+#define RAMP_KP         2
+//#define RAMP_MIN        0
+//#define RAMP_MAX        720
+//#define RAMP_FINE_RANGE 90
+ProportionalSettings rampSettings;
+rampSettings.kP = RAMP_KP;
+rampSettings.maxError = RAMP_MAX_ERROR;
+rampSettings.minOutput = - RAMP_MAX_POWER;
+rampSettings.maxOutput = RAMP_MAX_POWER;
 #endif
 
 ProportionalSettings armSettings;
 
 #define ARM_MAX_POWER  75
-#define ARM_MAX_ERROR  15
+#define ARM_MAX_ERROR  60
 #define ARM_KP         2
 #define ARM_MIN        0
 #define ARM_MAX        720
@@ -145,7 +155,6 @@ task main() {
 #ifdef ENABLE_RAMP
 
         if(joy1Btn(10) && joy1Btn(9) && joy2Btn(10) && joy2Btn(9)) {
-            releaseRamp();
             break;
         }
 
@@ -153,8 +162,17 @@ task main() {
 
     }
     writeDebugStreamLine("Main execution aborted");
+#ifdef ENABLE_RAMP
+    writeDebugStreamLine("Secondary execution initiated");
+   	haltMotors();
+    while(true){
+//TODO: Ascertain legitamte values for ramp and arm setpoints
+#define RAMP_SETPOINT -150
+#define ARM_RAMP_SETPOINT -150
+    	while (!proportionalControl(motorA, rampsettings, RAMP_SETPOINT));
+    	while (!proportionalControl(motorH, armsettings, ARM_RAMP_SETPOINT));
+#endif
 }
-
 void omniDrive(float x, float y, float scale, float spin) {
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
@@ -172,30 +190,19 @@ void omniDrive(float x, float y, float scale, float spin) {
     //writeDebugStreamLine("frontRight:%d,frontLeft:%d,backRight:%d,backLeft:%d", frontRightSpeed,frontLeftSpeed,backRightSpeed,backLeftSpeed);
 }
 
-#ifdef ENABLE_LATCH
+#ifdef ENABLE_RAMP
 
-void releaseRamp() {
-    //writeDebugStreamLine("Ramp release initiated.");
-#define LATCH_TARGET 270
-#define ARM_TARGET
-    int latchEncoder = 0, armEncoder = 0;
-    //TODO: test latch release
-    while(nMotorEncoder[motorA] < LATCH_TARGET) {
-        motor[motorA] = 50;
-    }
-    motor[motorA] = 0;
-    motor[motorH] = 0;
-    while (armEncoder < ARM_TARGET - armPos) {
-            armEncoder += nMotorEncoder[motorH];
-            nMotorEncoder[motorH] = 0;
-    }
-    motor[motorA] = 0;
-    motor[motorH] = 0;
-    while (armEncoder < ARM_TARGET - armPos) {
-            armEncoder += nMotorEncoder[motorH];
-            nMotorEncoder[motorH] = 0;
-    }
-    //writeDebugStreamLine("Latch release completed.");
-}
+	void haltMotors(){
+			writeDebugStreamLine("Halting motors...");
+			motor[motorA] = 0;
+			motor[frontLeft] = 0;
+			motor[frontRight] = 0;
+			motor[backLeft] = 0;
+			writeDebugStreamLine("...");
+			motor[backRight] = 0;
+			motor[motorH] = 0;
+			motor[clawServo] = 0;
+			writeDebugStreamLine("Complete!");
+	}
 
 #endif
