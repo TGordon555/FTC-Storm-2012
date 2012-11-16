@@ -1,5 +1,6 @@
 #ifndef OMNIDRIVE_H
 #define OMNIDRIVE_H
+#include "range.h"
 
 typedef struct {
     tMotor frontLeft,

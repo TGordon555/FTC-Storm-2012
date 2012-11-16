@@ -121,11 +121,11 @@ task main() {
 #ifdef ENABLE_CLAW
 				#define HAND_SERVO_SPEED .05
 				if (joystick.joy2_TopHat != 0 || joystick.joy2_TopHat != 1 || joystick.joy2_TopHat != 2 || joystick.joy2_TopHat != 3 || joystick.joy2_TopHat != 4 || joystick.joy2_TopHat != 5 || joystick.joy2_TopHat != 6 || joystick.joy2_TopHat != 7){
-							ClearTimer(t1);
+							ClearTimer(T1);
 							nxtDisplayTextLine(1, "Nothing pressed");
 				}
-				else if(time1[t1] > 500){
-						time1[t1] = 20;
+				else if(time1[T1] > 500){
+						time1[T1] = 20;
 				}
         switch(joystick.joy2_TopHat) {
         case 0:
@@ -154,9 +154,9 @@ task main() {
         	handServo = 0;
       	}
       	int handServoint = ceil(handServo - 0.5);
-        servo[clawServo] = handservoint;
+        servo[clawServo] = handServoint;
         writeDebugStreamLine("%f",handServo);
-				ClearTimer(t1);
+				ClearTimer(T1);
 #endif
 
 #ifdef ENABLE_RAMP

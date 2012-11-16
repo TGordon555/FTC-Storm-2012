@@ -12,7 +12,7 @@ bool proportionalControl(tMotor which,ProportionalSettings settings,float setpoi
     bool ret = false;
     if(abs(error) < abs(settings.minError)) {
         error = 0;
-        ret = true
+        ret = true;
     }
     float output = settings.kP*error;
     motor[which] = output > settings.maxOutput ? settings.maxOutput :

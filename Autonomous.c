@@ -20,8 +20,11 @@ task main() {
     motors.frontRight = frontRight;
     motors.backLeft   = backLeft;
     motors.backRight  = backRight;
-    OmniDrivePolar(motors,50,STARTING_ANGLE);
+    omniDrivePolar(motors,50,STARTING_ANGLE);
     wait1Msec(4000);
-    while(true) {
-    }
+    omniDrivePolar(motors,0,STARTING_ANGLE);
+    while(true){
+        omniDrivePolar(motors,75,random[360]);
+        wait1Msec(random[2001] + 1000);
+}
 }
