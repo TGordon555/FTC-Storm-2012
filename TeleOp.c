@@ -8,7 +8,7 @@
 #pragma config(Motor,  mtr_S1_C2_1,     frontRight,    tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_2,     backLeft,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C4_1,     armMotor,      tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C4_2,     motorI,        tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C4_2,     rampMotor,        tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S1_C3_1,    servo1,            tServoStandard)
 #pragma config(Servo,  srvo_S1_C3_2,    servo2,               tServoNone)
 #pragma config(Servo,  srvo_S1_C3_3,    servo3,               tServoNone)
@@ -33,7 +33,7 @@
  * - clawServo        moves hand
  */
 
-//#define ENABLE_RAMP
+#define ENABLE_RAMP
 //#define ENABLE_ARM
 #define ENABLE_CLAW
 //#define COMPETITION
@@ -47,11 +47,11 @@ void omniDrive(float x, float y, float scale, float spin);
 //#define RAMP_MIN        0
 //#define RAMP_MAX        720
 //#define RAMP_FINE_RANGE 90
-ProportionalSettings rampSettings;
-rampSettings.kP = RAMP_KP;
-rampSettings.maxError = RAMP_MAX_ERROR;
-rampSettings.minOutput = - RAMP_MAX_POWER;
-rampSettings.maxOutput = RAMP_MAX_POWER;
+//ProportionalSettings rampSettings;
+//rampSettings.kP = RAMP_KP;
+//rampSettings.maxError = RAMP_MAX_ERROR;
+//rampSettings.minOutput = - RAMP_MAX_POWER;
+//rampSettings.maxOutput = RAMP_MAX_POWER;
 #endif
 
 ProportionalSettings armSettings;
@@ -70,7 +70,7 @@ int xx = -5;
 
 task main() {
 #ifdef COMPETITION
-    waitForStart();
+ waitForStart();
 #endif
     armSettings.kP        = ARM_KP;
     armSettings.minError  = ARM_MIN_ERROR;
@@ -174,7 +174,7 @@ task main() {
        	 	//writeDebugStreamLine("%f",handServo);
 //				ClearTimer(T1);
 #endif
-}
+
 
 #ifdef ENABLE_RAMP
 
@@ -191,19 +191,9 @@ task main() {
         //}
 
 #endif
+} // while
+} //task main
 
-    writeDebugStreamLine("Main execution aborted");
-#ifdef ENABLE_RAMP
-    writeDebugStreamLine("Secondary execution initiated");
-   	haltMotors();
-    while(true){
-//TODO: Ascertain legitamte values for ramp and arm setpoints
-#define RAMP_SETPOINT -150
-#define ARM_RAMP_SETPOINT -150
-    	while (!proportionalControl(motorA, rampsettings, RAMP_SETPOINT));
-    	while (!proportionalControl(motorH, armsettings, ARM_RAMP_SETPOINT));
-#endif
-}
 void omniDrive(float x, float y, float scale, float spin) {
     int upRightSpeed = (x + y)  / sqrt(2);
     int upLeftSpeed  = (-x + y) / sqrt(2);
@@ -223,30 +213,17 @@ void omniDrive(float x, float y, float scale, float spin) {
 
 #ifdef ENABLE_RAMP
 
-	void haltMotors(){
-			writeDebugStreamLine("Halting motors...");
-			motor[motorA] = 0;
-			motor[frontLeft] = 0;
-			motor[frontRight] = 0;
-			motor[backLeft] = 0;
-			writeDebugStreamLine("...");
-			motor[backRight] = 0;
-			motor[motorH] = 0;
-			motor[        if(joy2Btn(5)) {
-            armRoughSetpoint = scaleJoystickValue(ARM_MIN,
-                                                  ARM_MAX,
-                                                  joystick.joy2_y1);
-            armFineSetpoint = 0;
-        }
-        if(joy2Btn(6)) {
-            armFineSetpoint = scaleJoystickValue(-ARM_FINE_RANGE,
-                                                 ARM_FINE_RANGE,
-                                                 joystick.joy2_y2);
-        } else {
-            armRoughSetpoint += armFineSetpoint;
-            armFineSetpoint = 0;
-        }] = 0;
-			writeDebugStreamLine("Complete!");
-	}
+	//void haltMotors(){
+	//		writeDebugStreamLine("Halting motors...");
+	//		motor[motorA] = 0;
+	//		motor[frontLeft] = 0;
+	//		motor[frontRight] = 0;
+	//		motor[backLeft] = 0;
+	//		writeDebugStreamLine("...");
+	//		motor[backRight] = 0;
+	//		motor[motorH] = 0;
+	//		motor[rampMotor] = 0;
+	//		writeDebugStreamLine("Complete!");
+	//}
 
 #endif
