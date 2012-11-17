@@ -36,7 +36,7 @@
 #define ENABLE_RAMP
 //#define ENABLE_ARM
 #define ENABLE_CLAW
-//#define COMPETITION
+#define COMPETITION
 
 void omniDrive(float x, float y, float scale, float spin);
 
@@ -70,7 +70,7 @@ int xx = -5;
 
 task main() {
 #ifdef COMPETITION
- waitForStart();
+ waitForStart(); //do not remove!!!!!!
 #endif
     armSettings.kP        = ARM_KP;
     armSettings.minError  = ARM_MIN_ERROR;
