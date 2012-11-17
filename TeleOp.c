@@ -127,7 +127,14 @@ task main() {
 #ifdef ENABLE_CLAW
 				#define HAND_SERVO_SPEED 10
 				xx = joystick.joy2_TopHat;
-				if (joystick.joy2_TopHat != Tophat_depressed_last){
+				if (joy2btn(1) || joy2btn(3)){
+					if (joy2btn(1)){
+						handServo = 180;
+				}
+					if (joy2btn(3)){
+						handServo = 0;
+				}
+				}else if (joystick.joy2_TopHat != Tophat_depressed_last){
 					if (joystick.joy2_TopHat == 0){
 						handServo += HAND_SERVO_SPEED;
 					}
