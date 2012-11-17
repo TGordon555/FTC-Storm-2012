@@ -20,18 +20,18 @@ task main() {
     motors.backLeft   = backLeft;
     motors.backRight  = backRight;
     omniDrivePolar(motors,50,STARTING_ANGLE);
-    wait1Msec(4000);
+    wait1Msec(3000);
     omniDrivePolar(motors,0,STARTING_ANGLE);
 
-    int accumulatedTime = 0, time;
-    while(true){
+//    int accumulatedTime = 0, time;
+//    while(true){
 
-        time = random[3000 - accumulatedTime] - accumulatedTime;
+//        time = random[3000 - accumulatedTime] - accumulatedTime;
 
-        omniDrivePolar(motors,sgn(time)*75,180);
-        accumulatedTime += time;
+//        omniDrivePolar(motors,sgn(time)*75,180);
+//        accumulatedTime += time;
 
-        wait1Msec(abs(time));
-        omniDrivePolar(motors,0,0);
-}
+//        wait1Msec(abs(time));
+//        omniDrivePolar(motors,0,0);
+//}
 }
