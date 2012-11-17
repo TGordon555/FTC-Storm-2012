@@ -9,7 +9,7 @@
 #include "JoystickDriver.c"
 #include "omniDrive.h"
 
-#define STARTING_ANGLE 90
+#define STARTING_ANGLE 75
 
 OmniMotors motors;
 task main() {
@@ -19,8 +19,8 @@ task main() {
     motors.frontRight = frontRight;
     motors.backLeft   = backLeft;
     motors.backRight  = backRight;
-    omniDrivePolar(motors,50,STARTING_ANGLE);
-    wait1Msec(3000);
+    omniDrivePolar(motors,100,STARTING_ANGLE);
+    wait1Msec(4500);
     omniDrivePolar(motors,0,STARTING_ANGLE);
 
 //    int accumulatedTime = 0, time;
