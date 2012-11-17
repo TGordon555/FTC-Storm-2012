@@ -178,9 +178,17 @@ task main() {
 
 #ifdef ENABLE_RAMP
 
-        if(joy1Btn(10) && joy1Btn(9) && joy2Btn(10) && joy2Btn(9)) {
-            break;
-        }
+#define RAMP_SPEED 50
+				if(joy2btn(10)){
+					motor[rampMotor] = RAMP_SPEED;
+			} else if(joy2btn(9)){
+					motor[rampMotor] = - RAMP_SPEED;
+			} else {
+					motor[rampMotor] = 0;
+				}
+        //if(joy1Btn(10) && joy1Btn(9) && joy2Btn(10) && joy2Btn(9)) {
+        //    break;
+        //}
 
 #endif
 
