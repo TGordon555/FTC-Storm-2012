@@ -94,10 +94,11 @@ task main() {
                   scaleJoystickValue(-100,100,joystick.joy1_y1),
                   joy1Btn(8) ? DRIVE_SLOW_SCALE : DRIVE_NORMAL_SCALE,
                   scaleJoystickValue(-50,50,joystick.joy1_x2));
-
-        motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
-
-
+				if (joy1btn(6)){
+        		motor[armMotor] = scaleJoystickValue(-50,50,joystick.joy2_y1);
+      	} else {
+      			motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
+      	}
 #ifdef ENABLE_ARM
 
         if(joy2Btn(5)) {
