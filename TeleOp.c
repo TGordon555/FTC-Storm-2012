@@ -34,7 +34,7 @@
  */
 
 //#define ENABLE_RAMP
-//#define ENABLE_ARM
+#define ENABLE_ARM
 #define ENABLE_CLAW
 //#define COMPETITION
 
@@ -55,6 +55,8 @@ rampSettings.maxOutput = RAMP_MAX_POWER;
 #endif
 
 ProportionalSettings armSettings;
+int Tophat_depressed_last = -2;
+int xx = -5;
 
 #define ARM_MAX_POWER  75
 #define ARM_MIN_ERROR  60
@@ -73,7 +75,7 @@ task main() {
     armSettings.kP        = ARM_KP;
     armSettings.minError  = ARM_MIN_ERROR;
     armSettings.minOutput = -ARM_MAX_POWER;
-    armSettings.maxOutput = ARM_MAX_POWER;
+
 
     float armRoughSetpoint = 0,
           armFineSetpoint  = 0;
@@ -81,7 +83,10 @@ task main() {
     float handServo = 0;
     while(true) {
         getJoystickSettings(joystick);
-
+      //  } else {
+      // 		writeDebugStreamLine("button 1 is off")
+      //}
+				//writeDebugStreamLine("%d", joystick.joy2_x1);
         //see if btn 8 is depressed.
         //if so set a scale factor for all movement calculations
         //in omnidrive function
@@ -118,46 +123,58 @@ task main() {
 
 #endif
 
+
 #ifdef ENABLE_CLAW
 				#define HAND_SERVO_SPEED .05
-				if (joystick.joy2_TopHat != 0 || joystick.joy2_TopHat != 1 || joystick.joy2_TopHat != 2 || joystick.joy2_TopHat != 3 || joystick.joy2_TopHat != 4 || joystick.joy2_TopHat != 5 || joystick.joy2_TopHat != 6 || joystick.joy2_TopHat != 7){
-							ClearTimer(T1);
-							nxtDisplayTextLine(1, "Nothing pressed");
+				xx = joystick.joy2_TopHat;
+				if (joystick.joy2_TopHat != Tophat_depressed_last){
+					if (joystick.joy2_TopHat == 0){
+						handServo += 5;
+					}
+					if (joystick.joy2_TopHat == 4){
+						handServo -= 5;
+					}
 				}
-				else if(time1[T1] > 500){
-						time1[T1] = 20;
-				}
-        switch(joystick.joy2_TopHat) {
-        case 0:
-        case 1:
-        case 7:
-            	//handServo += time1[t1] * HAND_SERVO_SPEED;
-        			handServo += 5;
-//            writeDebugStreamLine("%d", handServo);
-            break;
+				Tophat_depressed_last = joystick.joy2_TopHat;
+						//ClearTimer(
+				//	}else {
 
-        case 5:
-        case 4:
-        case 3:
-            //handServo -= time1[t1] * .05;
-        			handServo -= 5;
-//            writeDebugStreamLine("%d", handServo);
-            break;
+				//}
+				//		switch(joystick.joy2_TopHat) {
+    //    case 0:
+    //    case 1:
+    //    case 7:
+    //    			handServo += 10;
+    //        break;
 
-        default:
-            //writeDebugStreamLine("%d", handServo);
-        }
+    //    case 5:
+    //    case 4:
+    //    case 3:
+    //    			handServo -= 10;
+    //        break;
+    //    default:
+    //    handServo = handServo;
+    //    		break;
+    //   Tophat_old_val = joystick.joy2_TopHat;
+    //  }
+//				if (joystick.joy2_TopHat != 0 || joystick.joy2_TopHat != 1 || joystick.joy2_TopHat != 2 || joystick.joy2_TopHat != 3 || joystick.joy2_TopHat != 4 || joystick.joy2_TopHat != 5 || joystick.joy2_TopHat != 6 || joystick.joy2_TopHat != 7){
+//							ClearTimer(T1);
+//							nxtDisplayTextLine(1, "Nothing pressed");
+//				}
+//				else if(time1[T1] > 500){
+//						time1[T1] = 20;
+//				}
+//        }
         if (handServo >= 180){
         	handServo = 180;
-      	}
-      	if (handServo <= 0){
+      	}else if (handServo <= 0){
         	handServo = 0;
       	}
-      	int handServoint = ceil(handServo - 0.5);
-        servo[clawServo] = handServoint;
-        writeDebugStreamLine("%f",handServo);
-				ClearTimer(T1);
+        	servo[clawServo] = ceil(handServo - 0.5);
+       	 	//writeDebugStreamLine("%f",handServo);
+//				ClearTimer(T1);
 #endif
+}
 
 #ifdef ENABLE_RAMP
 
@@ -167,7 +184,6 @@ task main() {
 
 #endif
 
-    }
     writeDebugStreamLine("Main execution aborted");
 #ifdef ENABLE_RAMP
     writeDebugStreamLine("Secondary execution initiated");
