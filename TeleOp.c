@@ -34,7 +34,7 @@
  */
 
 //#define ENABLE_RAMP
-#define ENABLE_ARM
+//#define ENABLE_ARM
 #define ENABLE_CLAW
 //#define COMPETITION
 
@@ -125,14 +125,14 @@ task main() {
 
 
 #ifdef ENABLE_CLAW
-				#define HAND_SERVO_SPEED .05
+				#define HAND_SERVO_SPEED 10
 				xx = joystick.joy2_TopHat;
 				if (joystick.joy2_TopHat != Tophat_depressed_last){
 					if (joystick.joy2_TopHat == 0){
-						handServo += 5;
+						handServo += HAND_SERVO_SPEED;
 					}
 					if (joystick.joy2_TopHat == 4){
-						handServo -= 5;
+						handServo -= HAND_SERVO_SPEED;
 					}
 				}
 				Tophat_depressed_last = joystick.joy2_TopHat;
