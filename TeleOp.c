@@ -72,6 +72,7 @@ task main() {
 #ifdef COMPETITION
  waitForStart(); //do not remove!!!!!!
 #endif
+	int ArmTarget = 0;
     armSettings.kP        = ARM_KP;
     armSettings.minError  = ARM_MIN_ERROR;
     armSettings.minOutput = -ARM_MAX_POWER;
@@ -94,33 +95,66 @@ task main() {
                   scaleJoystickValue(-100,100,joystick.joy1_y1),
                   joy1Btn(8) ? DRIVE_SLOW_SCALE : DRIVE_NORMAL_SCALE,
                   scaleJoystickValue(-50,50,joystick.joy1_x2));
-				if (joy1btn(6)){
-        		motor[armMotor] = scaleJoystickValue(-50,50,joystick.joy2_y1);
-      	} else {
-      			motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
-      	}
+
 #ifdef ENABLE_ARM
+		#define ARM_FIRST_LEVEL 2000
+		#define ARM_SECOND_LEVEL 1460
+		#define ARM_FULL_LEVEL 2370
+		#define ARM_SPEED_CONST 40
+		if
+		if(joy2btn(1)){
+			ArmTarget = 0;
+		} else if (joy2btn(2)) {
+			ArmTarget = ARM_FIRST_LEVEL;
+		} else if (joy2btn(3)){
+			ArmTarget = ARM_SECOND_LEVEL;
+		} else if (joy2btn(4)){
+			ArmTarget = ARM_FULL_LEVEL;
+		} else if (joystick.joy2_y1 != 0) {
+			ArmTarget = -1;
+		} else {
+			ArmTarget = ArmTarget;
+		}
+		if(ArmTarget = -1){
+			motor[armMotor] = (50/128) * joystick.joy2_y1;
+		} else {
+		if (abs(nmotorencoder[armMotor] - ArmTarget) <= 5){
+				motor[armMotor] = 0;
+			} else if (nmotorencoder[armMotor] - ArmTarget > 5) {
+				motor[armMotor] = ARM_SPEED_CONST;
+			} else if (nmotorencoder[armMotor] - ArmTarget < -5){
+				motor[armMotor] = -ARM_SPEED_CONST;
+			} else {
+				motor[armMotor] = motor[armMotor];
+			}
+		}
+			// if (joy1btn(6)){
+				// motor[armMotor] = scaleJoystickValue(-50,50,joystick.joy2_y1);
+			// } else {
+				// motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
+			// }
+			
+			
+        // if(joy2Btn(5)) {
+            // armRoughSetpoint = scaleJoystickValue(ARM_MIN,
+                                                  // ARM_MAX,
+                                                  // joystick.joy2_y1);
+            // armFineSetpoint = 0;
+        // }
+        // if(joy2Btn(6)) {
+            // armFineSetpoint = scaleJoystickValue(-ARM_FINE_RANGE,
+                                                 // ARM_FINE_RANGE,
+                                                 // joystick.joy2_y2);
+        // } else {
+            // armRoughSetpoint += armFineSetpoint;
+            // armFineSetpoint = 0;
+        // }
 
-        if(joy2Btn(5)) {
-            armRoughSetpoint = scaleJoystickValue(ARM_MIN,
-                                                  ARM_MAX,
-                                                  joystick.joy2_y1);
-            armFineSetpoint = 0;
-        }
-        if(joy2Btn(6)) {
-            armFineSetpoint = scaleJoystickValue(-ARM_FINE_RANGE,
-                                                 ARM_FINE_RANGE,
-                                                 joystick.joy2_y2);
-        } else {
-            armRoughSetpoint += armFineSetpoint;
-            armFineSetpoint = 0;
-        }
-
-        proportionalControl(armMotor,
-                            armSettings,
-                            clamp(armRoughSetpoint+armFineSetpoint,
-                                  ARM_MIN,
-                                  ARM_MAX));
+        // proportionalControl(armMotor,
+                            // armSettings,
+                            // clamp(armRoughSetpoint+armFineSetpoint,
+                                  // ARM_MIN,
+                                  // ARM_MAX));
 
 #endif
 
@@ -128,11 +162,11 @@ task main() {
 #ifdef ENABLE_CLAW
 				#define HAND_SERVO_SPEED 10
 				xx = joystick.joy2_TopHat;
-				if (joy2btn(1) || joy2btn(3)){
-					if (joy2btn(1)){
+				if (joy2Btn(1) || joy2Btn(3)){
+					if (joy2Btn(1)){
 						handServo = 180;
 				}
-					if (joy2btn(3)){
+					if (joy2Btn(3)){
 						handServo = 0;
 				}
 				}else if (joystick.joy2_TopHat != Tophat_depressed_last){
@@ -187,9 +221,9 @@ task main() {
 #ifdef ENABLE_RAMP
 
 #define RAMP_SPEED 50
-				if(joy2btn(10)){
+				if(joy2Btn(10)){
 					motor[rampMotor] = RAMP_SPEED;
-			} else if(joy2btn(9)){
+			} else if(joy2Btn(9)){
 					motor[rampMotor] = - RAMP_SPEED;
 			} else {
 					motor[rampMotor] = 0;
