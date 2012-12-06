@@ -18,7 +18,7 @@
 #include "JoystickDriver.c"
 #include "omniDrive.h"
 
-#define Joint_Distance 1 //need to take measurement of distance from pole to edge of joint
+#define Joint_Distance 3 //need to take measurement of distance from pole to edge of joint
 #define Arm_Distance 13 //Distance from pole arm needs to be to unfold into ring placing position
 
 bool sensorCheck();
@@ -51,7 +51,7 @@ bool sensorCheck(){
   }else{
    omniDrivePolar(motors,100,90);
    wait1Msec(1000);//need to check this gets right up against board, need to move a bit if problems occur
-   omniDrivePolar(motors,100,90);
+   omniDrivePolar(motors,0,90);
   }//else
  }//while
  while(SensorValue[sonarSensor] == distance_in_cm){

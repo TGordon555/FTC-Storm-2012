@@ -1,0 +1,4 @@
+Home: 0
+1st level: 2000
+2nd Level: 1460
+Full: 2370
