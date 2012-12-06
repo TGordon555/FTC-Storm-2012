@@ -24,7 +24,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "JoystickDriver.c"  //Include file to "handle" the Bluetooth messages.
-#include "C:\Users\Tim\Desktop\rdpartyrobotcdr-3.1\drivers\hitechnic-irseeker-v2.h"
+#include "Drivers\drivers\hitechnic-irseeker-v2.h"
 #include "omniDrive.h"
 
 // !!!!!!!!!!!!!! TODO: MOVE TO COMMON FILE FOR TELEOP TO USE !!!!!!!!!!
