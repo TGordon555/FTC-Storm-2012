@@ -43,15 +43,15 @@ void omniDrive( OmniMotors motors, float vx, float vy, float mag, float spin ) {
                           backRightSpeed*backRightSpeed + backLeftSpeed*backLeftSpeed );
 #else
   float recipNorm = 1.0 /
-                    max( max( frontRightSpeed, frontLeftSpeed ),
-                         max( backRightSpeed, backLeftSpeed ) );
+                    max( max( abs(frontRightSpeed), abs(frontLeftSpeed ),
+                         max( abs(backRightSpeed), abs(backLeftSpeed) ) );
 #endif
 
   // apply motor power
-  motor[motors.frontLeft]  = clamp( frontLeftSpeed*recipNorm*mag,  -100, 100 );
-  motor[motors.backRight]  = clamp( backRightSpeed*recipNorm*mag,  -100, 100 );
-  motor[motors.backLeft]   = clamp( backLeftSpeed*recipNorm*mag,   -100, 100 );
-  motor[motors.frontRight] = clamp( frontRightSpeed*recipNorm*mag, -100, 100 );
+  motor[motors.frontLeft]  = frontLeftSpeed* recipNorm*mag;
+  motor[motors.backRight]  = backRightSpeed* recipNorm*mag;
+  motor[motors.backLeft]   = backLeftSpeed*  recipNorm*mag;
+  motor[motors.frontRight] = frontRightSpeed*recipNorm*mag;
 }
 
 void omniDrivePolar( OmniMotors motors, float speed, float angleDeg ) {

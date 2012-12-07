@@ -34,7 +34,7 @@
  */
 
 #define ENABLE_RAMP
-//#define ENABLE_ARM
+#define ENABLE_ARM
 #define ENABLE_CLAW
 #define COMPETITION
 
@@ -55,15 +55,13 @@ void omniDrive(float x, float y, float scale, float spin);
 #endif
 
 ProportionalSettings armSettings;
-int Tophat_depressed_last = -2;
-int xx = -5;
 
 #define ARM_MAX_POWER  75
-#define ARM_MIN_ERROR  60
-#define ARM_KP         2
 #define ARM_MIN        0
-#define ARM_MAX        720
-#define ARM_FINE_RANGE 90
+#define ARM_MAX        2211
+#define ARM_KP         (2.0/(ARM_MAX-ARM_MIN))
+#define ARM_MAX_ERROR  ((ARM_MAX-ARM_MIN)/20.0)
+#define ARM_FINE_RANGE ((ARM_MAX-ARM_MIN)/5.0)
 
 #define DRIVE_NORMAL_SCALE 1
 #define DRIVE_SLOW_SCALE   0.5
@@ -73,8 +71,9 @@ task main() {
  waitForStart(); //do not remove!!!!!!
 #endif
     armSettings.kP        = ARM_KP;
-    armSettings.minError  = ARM_MIN_ERROR;
+    armSettings.maxError  = ARM_MAX_ERROR;
     armSettings.minOutput = -ARM_MAX_POWER;
+    armSettings.maxOutput = ARM_MAX_POWER;
 
 
     float armRoughSetpoint = 0,
@@ -90,12 +89,15 @@ task main() {
         //see if btn 8 is depressed.
         //if so set a scale factor for all movement calculations
         //in omnidrive function
-        omniDrive(scaleJoystickValue(-100,100,joystick.joy1_x1),
-                  scaleJoystickValue(-100,100,joystick.joy1_y1),
-                  joy1Btn(8) ? DRIVE_SLOW_SCALE : DRIVE_NORMAL_SCALE,
+        float vx = scaleJoystickValue(-1,1,joystick.joy1_x1),
+              vy = scaleJoystickValue(-1,1,joystick.joy1_y1),
+              scale = joy1Btn(8) ? DRIVE_SLOW_SCALE :
+                                   DRIVE_NORMAL_SCALE;
+        omniDrive(vx,vy,
+                  sqrt(vx*vx+vy*vy) * scale,
                   scaleJoystickValue(-50,50,joystick.joy1_x2));
 
-        motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
+        //motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
 
 
 #ifdef ENABLE_ARM
