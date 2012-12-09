@@ -126,22 +126,23 @@ task main() {
 
 #ifdef ENABLE_CLAW
 		    #define HAND_SERVO_SPEED 45
-            if(joystick.joy2_TopHat == -1) {
+            if(!(joy2Btn(4) || joy2Btn(2))) {
                 wristTime = 0;
             } else {
                 wristTime += time1[T1];
             }
             ClearTimer(T1);
-			if (joy2Btn(1)){
+			if (joystick.joy2_TopHat == 0){
 				handServo = 180;
-   			} else if (joy2Btn(3)){
+   			} else if (joystick.joy2_TopHat == 4){
 				handServo = 20;
 			} else if (wristTime > 1000/HAND_SERVO_SPEED){
-				if (joystick.joy2_TopHat == 0){
+				if (joy2Btn(4)){
 					handServo += 1;
-				} else if (joystick.joy2_TopHat == 4){
+				} else if (joy2Btn(2)){
 					handServo -= 1;
 				}
+				wristTime -= 1000/HAND_SERVO_SPEED;
 			}
             if (handServo >= 180){
             	handServo = 180;
@@ -150,9 +151,9 @@ task main() {
           	}
         	servo[wristServo] = handServo;
 
-            if(joy2Btn(3)) {
+            if(joy2Btn(1)) {
             	servo[clawServo] = 230;
-        	} else if(joy2Btn(1)) {
+        	} else if(joy2Btn(3)) {
             	servo[clawServo] = 130;
         	}
 #endif
