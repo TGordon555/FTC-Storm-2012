@@ -6,7 +6,11 @@
 
 #define M_SQRT2		1.41421356237309504880
 #define M_SQRT1_2	0.70710678118654752440
-#define max(a,b) ((a) > (b) ? (a) : (b))
+
+float fmax( float a, float b ) {
+  return a > b ? a : b;
+}
+
 
 typedef struct {
   tMotor frontLeft;
@@ -43,8 +47,8 @@ void omniDrive( OmniMotors motors, float vx, float vy, float mag, float spin ) {
                           backRightSpeed*backRightSpeed + backLeftSpeed*backLeftSpeed );
 #else
   float recipNorm = 1.0 /
-                    max( max( abs(frontRightSpeed), abs(frontLeftSpeed ),
-                         max( abs(backRightSpeed), abs(backLeftSpeed) ) );
+                    fmax( fmax( abs( frontRightSpeed ), abs( frontLeftSpeed ) ),
+                          fmax( abs( backRightSpeed ),  abs( backLeftSpeed ) ) );
 #endif
 
   // apply motor power

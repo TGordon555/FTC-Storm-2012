@@ -59,12 +59,14 @@ ProportionalSettings armSettings;
 #define ARM_MAX_POWER  75
 #define ARM_MIN        0
 #define ARM_MAX        2211
-#define ARM_KP         (2.0/(ARM_MAX-ARM_MIN))
-#define ARM_MAX_ERROR  ((ARM_MAX-ARM_MIN)/20.0)
-#define ARM_FINE_RANGE ((ARM_MAX-ARM_MIN)/5.0)
+#define ARM_KP         (2.0/(ARM_MAX - ARM_MIN))
+#define ARM_MAX_ERROR  ((ARM_MAX - ARM_MIN)/20.0)
+#define ARM_FINE_RANGE ((ARM_MAX - ARM_MIN)/5.0)
 
 #define DRIVE_NORMAL_SCALE 1
 #define DRIVE_SLOW_SCALE   0.5
+
+#define WRIST_SERVO_SPEED 130
 
 task main() {
 #ifdef COMPETITION
@@ -82,7 +84,7 @@ task main() {
     float wristServoVal = 0;
     long wristTime = 0;
     while(true) {
-        getJoystickSettings(joystick);
+      getJoystickSettings( joystick );
       //  } else {
       // 		writeDebugStreamLine("button 1 is off")
       //}
@@ -97,7 +99,7 @@ task main() {
         omniDrive(vx,vy,
                   sqrt(vx*vx+vy*vy) * scale,
                   scaleJoystickValue(-50,50,joystick.joy1_x2));
-				if (joy1btn(6)){
+				if( joy1Btn( 6 ) ){
         		motor[armMotor] = scaleJoystickValue(-50,50,joystick.joy2_y1);
       	} else {
       			motor[armMotor] = scaleJoystickValue(-75,75,joystick.joy2_y1);
@@ -140,7 +142,7 @@ task main() {
 				wristServoVal = 180;
    			} else if (joystick.joy2_TopHat == 4){
 				wristServoVal = 20;
-			} else if (wristTime > 1000/WRIST_SERVO_SPEED){
+			} else if (wristTime > 1000 / WRIST_SERVO_SPEED ){
 				if (joy2Btn(4)){
 					wristServoVal += 1;
 				} else if (joy2Btn(2)){
@@ -166,9 +168,9 @@ task main() {
 #ifdef ENABLE_RAMP
 
 #define RAMP_SPEED 50
-				if(joy2btn(10)){
+      if( joy2Btn( 10 ) ) {
 					motor[rampMotor] = RAMP_SPEED;
-			} else if(joy2btn(9)){
+			} else if( joy2Btn( 9 ) ) {
 					motor[rampMotor] = - RAMP_SPEED;
 			} else {
 					motor[rampMotor] = 0;

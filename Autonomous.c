@@ -149,8 +149,8 @@ bool driveToBeacon() {
 
     // if we are not there yet drive toward the target
     if( strength < IR_STRENGTH_CLOSE ) {
-    	omniDrive( gMotors, 1, 0, 50, 0.333 * (acS2 + acS3 + acS4) - 0.5 * (acS0 + acS1) );
-	    wait1Msec( 100 );
+      omniDrive( gMotors, 1, 0, 50, 0.333 * (acS2 + acS3 + acS4) - 0.5 * (acS0 + acS1) );
+      wait1Msec( 100 );
     }
   } while( strength < IR_STRENGTH_CLOSE );
 
