@@ -1,35 +1,67 @@
 #ifndef OMNIDRIVE_H
 #define OMNIDRIVE_H
+
 #include "range.h"
 
-typedef struct {
-    tMotor frontLeft,
-           frontRight,
-           backLeft,
-           backRight;
-} OmniMotors;
 
-void omniDrive(OmniMotors motors,float x, float y, float scale, float spin) {
-    int upRightSpeed = (x + y)  / sqrt(2);
-    int upLeftSpeed  = (-x + y) / sqrt(2);
+#define M_SQRT2		1.41421356237309504880
+#define M_SQRT1_2	0.70710678118654752440
 
-    int frontRightSpeed = clamp(upLeftSpeed  - spin,-100,100) * scale,
-        frontLeftSpeed  = clamp(upRightSpeed + spin,-100,100) * scale,
-        backRightSpeed  = clamp(upRightSpeed - spin,-100,100) * scale,
-        backLeftSpeed   = clamp(upLeftSpeed  + spin,-100,100) * scale;
-
-    motor[motors.frontLeft]  = frontLeftSpeed;
-    motor[motors.backRight]  = backRightSpeed;
-    motor[motors.backLeft]   = backLeftSpeed;
-    motor[motors.frontRight] = frontRightSpeed;
-
-    //writeDebugStreamLine("frontRight:%d,frontLeft:%d,backRight:%d,backLeft:%d", frontRightSpeed,frontLeftSpeed,backRightSpeed,backLeftSpeed);
+float fmax( float a, float b ) {
+  return a > b ? a : b;
 }
 
-void omniDrivePolar(OmniMotors motors,float speed,float angle) {
-    float x = speed*cosDegrees(angle),
-          y = speed*sinDegrees(angle);
-    omniDrive(motors,x,y,1,0);
+
+typedef struct {
+  tMotor frontLeft;
+  tMotor frontRight;
+  tMotor backLeft;
+  tMotor backRight;
+} OmniMotors;
+
+
+/**
+ * Set the motor speeds from 2d velocity vector
+ * @param motors      a map of motor position to motor id
+ * @param vx          the velocity direction component in the x direction
+ * @param vy          the velocity direction component in the y direction
+ * @param mag         the output magnitude (-100 to 100 inclusive)0
+ * @param spin        spin power. when used in combination with velocity this will do swing turn
+ */
+void omniDrive( OmniMotors motors, float vx, float vy, float mag, float spin ) {
+  // project the velocity into the wheel planes
+  float upRightSpeed = (vx + vy)  * M_SQRT1_2;
+  float upLeftSpeed  = (-vx + vy) * M_SQRT1_2;
+
+  // mix the wheel plane velocity with a forward bias and a spin
+  // TODO: fix different units
+  float frontRightSpeed = upLeftSpeed  - spin;
+  float frontLeftSpeed  = upRightSpeed + spin;
+  float backRightSpeed  = upRightSpeed - spin;
+  float backLeftSpeed   = upLeftSpeed  + spin;
+
+  // normalize motor power
+#ifdef USE_AGRESSIVE_NORMALIZATION
+  float recipNorm = 1.0 /
+                    sqrt( frontRightSpeed*frontRightSpeed + frontLeftSpeed*frontLeftSpeed +
+                          backRightSpeed*backRightSpeed + backLeftSpeed*backLeftSpeed );
+#else
+  float recipNorm = 1.0 /
+                    fmax( fmax( abs( frontRightSpeed ), abs( frontLeftSpeed ) ),
+                          fmax( abs( backRightSpeed ),  abs( backLeftSpeed ) ) );
+#endif
+
+  // apply motor power
+  motor[motors.frontLeft]  = frontLeftSpeed* recipNorm*mag;
+  motor[motors.backRight]  = backRightSpeed* recipNorm*mag;
+  motor[motors.backLeft]   = backLeftSpeed*  recipNorm*mag;
+  motor[motors.frontRight] = frontRightSpeed*recipNorm*mag;
+}
+
+void omniDrivePolar( OmniMotors motors, float speed, float angleDeg ) {
+    float x = cosDegrees( angleDeg );
+    float y = sinDegrees( angleDeg );
+    omniDrive( motors, x, y, speed, 0 );
 }
 
 #endif
