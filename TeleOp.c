@@ -141,7 +141,7 @@ task main() {
 			if (joystick.joy2_TopHat == 0){
 				wristServoVal = 180;
    			} else if (joystick.joy2_TopHat == 4){
-				wristServoVal = 20;
+				wristServoVal = 0;
 			} else if (wristTime > 1000 / WRIST_SERVO_SPEED ){
 				if (joy2Btn(4)){
 					wristServoVal += 1;
@@ -153,7 +153,7 @@ task main() {
             if (wristServoVal >= 180){
             	wristServoVal = 180;
       	    }else if (wristServoVal <= 20){
-        	    wristServoVal = 20;
+        	    wristServoVal = 0;
           	}
         	servo[wristServo] = wristServoVal;
 
