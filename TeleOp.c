@@ -112,7 +112,6 @@ task main() {
 		#define ARM_SECOND_LEVEL 1460
 		#define ARM_FULL_LEVEL 2370
 		#define ARM_SPEED_CONST 40
-		if
 		if(joy2btn(1)){
 			ArmTarget = 0;
 		} else if (joy2btn(2)) {
@@ -126,7 +125,7 @@ task main() {
 		} else {
 			ArmTarget = ArmTarget;
 		}
-		if(ArmTarget = -1){
+		if(ArmTarget == -1){
 			motor[armMotor] = (50/128) * joystick.joy2_y1;
 		} else {
 		if (abs(nmotorencoder[armMotor] - ArmTarget) <= 5){
